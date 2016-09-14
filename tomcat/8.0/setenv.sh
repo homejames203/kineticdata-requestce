@@ -1,0 +1,11 @@
+OPTS=""
+OPTS="$OPTS -Xms1g"
+OPTS="$OPTS -Xmx1g"
+OPTS="$OPTS -Djava.awt.headless=true"
+OPTS="$OPTS -Djsse.enableSNIExtension=false"
+OPTS="$OPTS -Djava.security.egd=file:/dev/./urandom"
+OPTS="$OPTS -XX:+HeapDumpOnOutOfMemoryError"
+OPTS="$OPTS -XX:HeapDumpPath=/usr/local/tomcat"
+
+export CATALINA_OPTS="$OPTS"
+export JAVA_OPTS="-server"
