@@ -37,45 +37,68 @@ sdk = Kinetic::TaskApiV2::SDK.new(@defaults, @custom)
 # wait until the web application is alive
 sdk.wait_until_alive
 
+# update the database properties
 sdk.update_db
-sdk.update_license
-sdk.create_source(@custom['space']['slug'], @custom['space']['server'])
 
+# import the license if there is one
+sdk.update_license(pwd+"/license.txt")
+
+# create the source
+sdk.create_source(@custom['source']['slug'], @custom['source']['server'])
+
+# create policy rules
 sdk.create_policy_rule(
   { "name" => "Test", "type" => "API Access",
     "rule" => "true", "message" => "You should have access."
   })
 
+# create categories
 sdk.create_category("Jack")
 
+# create users
 sdk.create_user({ "loginId" => "foo", "password" => "bar",
   "email" => "foo@bar.com" })
 
+# create groups
 sdk.create_group("Test Group")
 
-
+# import handlers
 Dir[File.dirname(File.expand_path(__FILE__))+"/handlers/*"].each do |handler|
   handler_file = File.new(handler, 'rb')
   sdk.import_handler(handler_file)
 
-  # Update each handler - need API to get list of info values?
+  # update each handler - need API to get list of info values?
   body = {
     "properties" => {
-      "api_server" => @custom['space']['server'],
-      "api_username" => @custom['space']['user']['username'],
-      "api_password" => @custom['space']['user']['password'],
-      "space_slug" => @custom['space']['slug']
+      "api_server" => @custom['source']['server'],
+      "api_username" => @custom['source']['user']['username'],
+      "api_password" => @custom['source']['user']['password'],
+      "space_slug" => @custom['source']['slug']
     },
     "categories" => []
   }
   sdk.update_handler(File.basename(handler_file, ".zip"), body)
 end
+
+# import trees
 Dir[File.dirname(File.expand_path(__FILE__))+"/trees/*"].each do |tree|
+  # fix up the source name in the tree, otherwise the import will fail
+  content = File.read(tree).sub(
+    /<sourceName>(.*)<\/sourceName>/,
+    "<sourceName>#{@custom['source']['slug']}</sourceName>"
+    )
+  # save the file
+  File.write(tree, content)
   sdk.import_tree(File.new(tree, 'rb'))
 end
+
+# import routines
 Dir[File.dirname(File.expand_path(__FILE__))+"/routines/*"].each do |routine|
   sdk.import_routine(File.new(routine, 'rb'))
 end
 
+# update engine properties
 sdk.update_engine
+
+# update web server and configuration user properties
 sdk.update_properties

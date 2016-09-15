@@ -1,5 +1,5 @@
-space:
-  slug: "task_n1k-4"
+source:
+  slug: "task_n1k-7"
   server: "http://localhost:8080/kinetic"
   user:
     username: "user@kineticdata.com"

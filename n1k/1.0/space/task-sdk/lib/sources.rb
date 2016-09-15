@@ -3,7 +3,7 @@ module Kinetic
     class SDK
 
       def create_source(slug, source_web_server, headers=default_headers)
-        name = "Kinetic Request CE"
+        name = slug
         body = {
           "name" => name,
           "status" => "Active",
@@ -11,8 +11,8 @@ module Kinetic
           "properties" => {
             "Space Slug" => slug,
             "Web Server" => source_web_server,
-            "Proxy Username" => @custom['space']['user']['username'],
-            "Proxy Password" => @custom['space']['user']['password']
+            "Proxy Username" => @custom['source']['user']['username'],
+            "Proxy Password" => @custom['source']['user']['password']
           },
           "policyRules" => []
         }

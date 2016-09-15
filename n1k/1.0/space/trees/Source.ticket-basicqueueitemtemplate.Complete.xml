@@ -1,6 +1,6 @@
 <tree schema_version="1.0">
-    <sourceName>CE Playground</sourceName>
-    <sourceGroup>ticket > workorder</sourceGroup>
+    <sourceName>task_n1k-7</sourceName>
+    <sourceGroup>ticket > basic-queue-item-template</sourceGroup>
     <type>Tree</type>
     <status>Active</status>
     <taskTree builder_version="" schema_version="1.0" version="">
