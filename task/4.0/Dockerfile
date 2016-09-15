@@ -34,5 +34,5 @@ WORKDIR /usr/local
 ADD https://s3.amazonaws.com/jruby.org/downloads/$JRUBY_VER/jruby-bin-$JRUBY_VER.tar.gz .
 RUN tar -xzvf jruby-bin-$JRUBY_VER.tar.gz && rm jruby-bin-$JRUBY_VER.tar.gz
 ENV PATH $JRUBY_HOME/bin:$PATH
-RUN gem install rest-client -v 1.8.0
+RUN gem install colorize rest-client -v 1.8.0
 WORKDIR ${CATALINA_HOME}

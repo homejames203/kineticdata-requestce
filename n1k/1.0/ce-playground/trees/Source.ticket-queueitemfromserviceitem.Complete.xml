@@ -1,0 +1,46 @@
+<tree schema_version="1.0">
+    <sourceName>CE Playground</sourceName>
+    <sourceGroup>ticket > queue-item-from-service-item</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>Complete</name>
+        <author/>
+        <notes/>
+        <lastID>1</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters/>
+                <messages/>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_create_trigger_v1_1</task>
+                </dependents>
+            </task>
+        
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_1" name="utilities_create_trigger_v1_1" x="309" y="189">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>false</deferrable>
+          <visible>false</visible>
+          <parameters>
+            <parameter id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+            <parameter id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%= @values['Deferral Token']%&gt;</parameter>
+            <parameter id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip=""/>
+            <parameter id="message" label="Message" menu="" required="false" tooltip=""/>
+        </parameters>
+                <messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents/>
+        </task>
+          </request>
+    </taskTree>
+</tree>

@@ -1,0 +1,406 @@
+<tree schema_version="1.0">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_approval_create_individual</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+                        <name>Approval Create - Individual</name>
+                        <author/>
+                        <notes/>
+                        <lastID>48</lastID>
+                        <taskDefinition id="routine_approval_create_individual" name="Approval Create - Individual" schema_version="1.0" version="1">
+                <visible>false</visible>
+                <deferrable>true</deferrable>
+                <parameters>
+                    <parameter id="Space Slug" label="Space Slug" required="true" tooltip="Slug of the Space"/>
+                    <parameter id="Kapp Slug" label="Kapp Slug" required="true" tooltip="Kapp which the Approval Form is in"/>
+                    <parameter id="Approval Form Slug" label="Approval Form Slug" required="true" tooltip="Slug of Approval Form to be used"/>
+                    <parameter id="Approver ID" label="Approver ID" required="true" tooltip="CE Login ID of Approver"/>
+                    <parameter id="Summary" label="Summary" required="true" tooltip="Short description for approver (used in submission label and email subject)"/>
+                    <parameter id="Details" label="Details" required="true" tooltip="Long description for approver"/>
+                    <parameter id="Originating System" label="Originating System" required="false" tooltip="Source of Parent Submission (Kinetic Core, Salesforce)"/>
+                    <parameter id="Originating ID" label="Originating ID" required="false" tooltip="ID of Parent Submission"/>
+                    <parameter id="Review Url" label="Review Url" required="false" tooltip="URL to review originating record"/>
+                    <parameter id="System Input" label="System Input" required="false" tooltip="Structured data for system support"/>
+                </parameters>
+                <handler name="system_tree_call" version="1"/>
+                <results format="xml">
+                    <result name="Decision" tooltip="Approved or Denied"/>
+                    <result name="Approver ID" tooltip="ID of Person who actually completed approval"/>
+                    <result name="Denial Reason" tooltip="Reason for denial"/>
+                    <result name="Comment" tooltip="Additional comments"/>
+                    <result name="Approval ID" tooltip="ID of the Approval Submission"/>
+                </results>
+            </taskDefinition>
+                        <request>
+                            <task definition_id="system_start_v1" id="start" name="Start" x="165" y="-81">
+                                <version>1</version>
+                                <configured>true</configured>
+                                <defers>false</defers>
+                                <deferrable>false</deferrable>
+                                <visible>false</visible>
+                                <parameters/>
+                                <messages/>
+                                <dependents>
+                
+                
+                
+                                
+                            
+                        <task label="" type="Complete" value="">kinetic_request_ce_user_retrieve_v1_42</task>
+                        </dependents>
+                            </task>
+                
+                
+                
+                
+                
+                
+                
+                            <task definition_id="utilities_defer_v1" id="utilities_defer_v1_4" name="Defer" x="308" y="186">
+                          <version>1</version>
+                          <configured>true</configured>
+                          <defers>true</defers>
+                          <deferrable>true</deferrable>
+                          <visible>false</visible>
+                          <parameters>
+                            <parameter id="deferral_value" label="Initial Deferral Value" menu="" required="false" tooltip=""/>
+                        </parameters>
+                                <messages>
+                            <message type="Create"/>
+                            <message type="Update"/>
+                            <message type="Complete"/>
+                          </messages>
+                          <dependents>
+                
+                
+                                
+                
+                
+                                
+                            
+                            
+                        
+                            
+                        <task label="" type="Create" value="">kinetic_request_ce_submission_create_v1_34</task>
+                            
+                        <task label="" type="Complete" value="">kinetic_request_ce_submission_get_answers_v1_38</task>
+                    </dependents>
+                        </task>
+                
+                            
+                
+                
+                
+                
+                
+                
+                
+                            
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                            
+                          
+                
+                          
+                        
+                      
+                        
+                      
+                        
+                      
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    <task definition_id="kinetic_request_ce_submission_create_v1" id="kinetic_request_ce_submission_create_v1_34" name="Create Approval" x="462" y="176">
+                  <version>1</version>
+                  <configured>true</configured>
+                  <defers>false</defers>
+                  <deferrable>false</deferrable>
+                  <visible>false</visible>
+                  <parameters>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from.">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+                    <parameter id="kapp_slug" label="Kapp Slug:" menu="" required="true" tooltip="The slug of the Kapp the submission is for.">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
+                    <parameter id="form_slug" label="Form Slug:" menu="" required="true" tooltip="The slug of the form the submission is for.">&lt;%=@inputs['Approval Form Slug']%&gt;</parameter>
+                    <parameter id="values" label="Values:" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%=
+                {
+                "Status"=&gt;"Pending Approval",
+                "Deferral Token"=&gt;@results['Defer']['deferral_token'],
+                "System Input"=&gt;@inputs['System Input'],
+                "Assigned Individual Displayed Name"=&gt;@results['Retrieve Approver']['display_name'],
+                "Assigned Individual"=&gt;@inputs['Approver ID'],
+                "Summary"=&gt;@inputs['Summary'],
+                "Details"=&gt;@inputs['Details'],
+                "Originating System" =&gt;@inputs['Originating System'],
+                "Review Url" =&gt;@inputs['Review Url'],
+                "Parent Instance ID" =&gt; @inputs['Originating ID']
+                }.to_json
+            %&gt;</parameter>
+                    <parameter id="current_page_name" label="Current Page Name:" menu="" required="false" tooltip="Set the current page name."/>
+                    <parameter id="current_page_navigation" label="Current Page Navigation:" menu="" required="false" tooltip="Set the current page navigation."/>
+                    <parameter id="origin_id" label="Origin ID:" menu="" required="false" tooltip="Set the origin ID.">&lt;%= @inputs['Originating System'] == "Kinetic Core" ? @inputs['Originating ID'] : nil%&gt;</parameter>
+                    <parameter id="parent_id" label="Parent ID:" menu="" required="false" tooltip="Set the parent ID."/>
+                </parameters>
+                        <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                  </messages>
+                  <dependents>
+                            
+                        
+                        <task label="" type="Create" value="">routine_kd_core_message_template_v1_47</task></dependents>
+                </task>
+                  
+                    
+                  
+                    <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_36" name="Close Approval" x="308" y="363">
+                  <version>1</version>
+                  <configured>true</configured>
+                  <defers>false</defers>
+                  <deferrable>false</deferrable>
+                  <visible>false</visible>
+                  <parameters>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from.">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+                    <parameter id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=@results['Create Approval']['submissionId']%&gt;</parameter>
+                    <parameter id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state.">Closed</parameter>
+                    <parameter id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">&lt;%=
+            
+            {
+               "Status" =&gt; @results['Retrieve Approval Answers']['Decision']
+            }.to_json
+            
+            %&gt;</parameter>
+                    <parameter id="current_page_name" label="Current Page Name:" menu="" required="false" tooltip="Set the current page name."/>
+                    <parameter id="current_page_navigation" label="Current Page Navigation:" menu="" required="false" tooltip="Set the current page navigation."/>
+                    <parameter id="origin_id" label="Origin ID:" menu="" required="false" tooltip="Set the origin ID."/>
+                    <parameter id="parent_id" label="Parent ID:" menu="" required="false" tooltip="Set the parent ID."/>
+                </parameters>
+                        <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                  </messages>
+                  <dependents>
+                            
+                        <task label="" type="Complete" value="">system_tree_return_v1_37</task>
+                    </dependents>
+                </task>
+                  
+                    <task definition_id="system_tree_return_v1" id="system_tree_return_v1_37" name="Return" x="308" y="462">
+                  <version>1</version>
+                  <configured>true</configured>
+                  <defers>false</defers>
+                  <deferrable>false</deferrable>
+                  <visible>false</visible>
+                  <parameters>
+                    <parameter id="Decision" label="Decision" menu="" required="false" tooltip="Approved or Denied">&lt;%=@results['Retrieve Approval Answers']['Decision']%&gt;</parameter>
+                    <parameter id="Approver ID" label="Approver ID" menu="" required="false" tooltip="ID of Person who actually completed approval">&lt;%=@results['Retrieve Approval Answers']['Assigned Individual']%&gt;</parameter>
+                    <parameter id="Denial Reason" label="Denial Reason" menu="" required="false" tooltip="Reason for denial">&lt;%=@results['Retrieve Approval Answers']['Denial Reason']%&gt;</parameter>
+                    <parameter id="Comment" label="Comment" menu="" required="false" tooltip="Additional comments">&lt;%=@results['Retrieve Approval Answers']['Comments']%&gt;</parameter>
+                    <parameter id="Approval ID" label="Approval ID" menu="" required="false" tooltip="ID of the Approval Submission">&lt;%=@results['Create Approval']['submissionId']%&gt;</parameter>
+                </parameters>
+                        <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                  </messages>
+                  <dependents/>
+                </task>
+                  
+                    <task definition_id="kinetic_request_ce_submission_get_answers_v1" id="kinetic_request_ce_submission_get_answers_v1_38" name="Retrieve Approval Answers" x="308" y="267">
+                  <version>1</version>
+                  <configured>true</configured>
+                  <defers>false</defers>
+                  <deferrable>false</deferrable>
+                  <visible>false</visible>
+                  <parameters>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from.">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+                    <parameter id="submission_id" label="Submission ID" menu="" required="true" tooltip="The id of the submission to retrieve answers for.">&lt;%=@results['Create Approval']['submissionId']%&gt;</parameter>
+                </parameters>
+                        <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                  </messages>
+                  <dependents>
+                        <task label="" type="Complete" value="">kinetic_request_ce_submission_update_v1_36</task>
+                    </dependents>
+                </task>
+                  
+                    
+                  
+                    
+                  
+                    <task definition_id="kinetic_request_ce_kapp_retrieve_v1" id="kinetic_request_ce_kapp_retrieve_v1_41" name="Retrieve KAPP" x="308" y="11">
+                  <version>1</version>
+                  <configured>true</configured>
+                  <defers>false</defers>
+                  <deferrable>false</deferrable>
+                  <visible>false</visible>
+                  <parameters>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from.">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+                    <parameter id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The Kapp being retrieved from.">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
+                </parameters>
+                        <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                  </messages>
+                  <dependents>
+                        <task label="" type="Complete" value="">utilities_echo_v1_44</task>
+                        </dependents>
+                </task>
+                  
+                    <task definition_id="kinetic_request_ce_user_retrieve_v1" id="kinetic_request_ce_user_retrieve_v1_42" name="Retrieve Approver" x="308" y="-92">
+                  <version>1</version>
+                  <configured>true</configured>
+                  <defers>false</defers>
+                  <deferrable>false</deferrable>
+                  <visible>false</visible>
+                  <parameters>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from.">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+                    <parameter id="username" label="Username:" menu="" required="true" tooltip="The unique username for the user.">&lt;%=@inputs['Approver ID']%&gt;</parameter>
+                </parameters>
+                        <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                  </messages>
+                  <dependents>
+                            
+                        <task label="" type="Complete" value="">kinetic_request_ce_kapp_retrieve_v1_41</task>
+                        </dependents>
+                </task>
+                  
+                    
+                  
+                    <task definition_id="utilities_echo_v1" id="utilities_echo_v1_44" name="Web Server Url" x="308" y="99">
+                  <version>1</version>
+                  <configured>true</configured>
+                  <defers>false</defers>
+                  <deferrable>false</deferrable>
+                  <visible>false</visible>
+                  <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+            # Check if there is a KAPP attribute Called Web Server Url. If none exists return none
+            attributes = JSON.parse(@results['Retrieve KAPP']['attributes'])
+            attributes.select {|h| h["name"] == "Web Server Url" }.length &gt; 0 ? attributes.select {|h| h["name"] == "Web Server Url" }[0]["values"][0] : "none"
+            %&gt;</parameter>
+                </parameters>
+                        <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                  </messages>
+                  <dependents>
+                            <task label="" type="Complete" value="">utilities_defer_v1_4</task>
+                        </dependents>
+                </task>
+                  
+                    
+                  
+                    
+                  
+                <task definition_id="routine_kd_core_message_template_v1" id="routine_kd_core_message_template_v1_47" name="Email Approver" x="596" y="175">
+              <version>1</version>
+              <configured>true</configured>
+              <defers>false</defers>
+              <deferrable>true</deferrable>
+              <visible>false</visible>
+              <parameters>
+                    <parameter id="Title" label="Title" menu="" required="false" tooltip="The title that shows up next to the KD logo">&lt;%=@inputs['Summary']%&gt;</parameter>
+                    <parameter id="HTML Body" label="HTML Body" menu="" required="false" tooltip="The body that shows up inside the KD Wrapper">&lt;p style="white-space: pre-line;"&gt;&lt;%=@inputs['Details']%&gt;&lt;/p&gt;
+        
+        &lt;table width="100%" border="0" cellspacing="0" cellpadding="0"&gt;
+            &lt;tr&gt;
+                &lt;td align="center"&gt;
+                    &lt;!-- BULLETPROOF BUTTON --&gt;
+                    &lt;table width="100%" border="0" cellspacing="0" cellpadding="0"&gt;
+                        &lt;tr&gt;
+                            &lt;td align="center" style="padding-top: 25px;" class="padding"&gt;
+                                &lt;table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container"&gt;
+                                    &lt;tr&gt;
+                                        &lt;td align="center" style="border-radius: 3px;" bgcolor="#256F9C"&gt;&lt;a href="&lt;%=@inputs['Review Url']%&gt;" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; border-radius: 3px; padding: 15px 25px; border: 1px solid #256F9C; display: inline-block;" class="mobile-button"&gt;Review Request&lt;/a&gt;&lt;/td&gt;
+                                    &lt;/tr&gt;
+                                &lt;/table&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/table&gt;
+                &lt;/td&gt;
+                &lt;td align="center"&gt;
+                    &lt;!-- BULLETPROOF BUTTON --&gt;
+                    &lt;table width="100%" border="0" cellspacing="0" cellpadding="0"&gt;
+                        &lt;tr&gt;
+                            &lt;td align="center" style="padding-top: 25px;" class="padding"&gt;
+                                &lt;table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container"&gt;
+                                    &lt;tr&gt;
+                                        &lt;td align="center" style="border-radius: 3px;" bgcolor="#256F9C"&gt;&lt;a href="&lt;%=@results['Web Server Url']['output'] + '/' + @inputs['Space Slug'] + '/submissions/' + @results['Create Approval']['submissionId']%&gt;" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; border-radius: 3px; padding: 15px 25px; border: 1px solid #256F9C; display: inline-block;" class="mobile-button"&gt;Approve / Deny&lt;/a&gt;&lt;/td&gt;
+                                    &lt;/tr&gt;
+                                &lt;/table&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/table&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;</parameter>
+                    <parameter id="Plain Text Body" label="Plain Text Body" menu="" required="false" tooltip="The text that shows up in the plain text version of the email">Summary: &lt;%=@inputs['Summary']%&gt;
+            
+            Details: &lt;%=@inputs['Details']%&gt;
+            
+            View Original: &lt;%=@inputs['Review Url']%&gt;
+            
+            Approve / Deny: &lt;%=@results['Web Server Url']['output'] + '/' + @inputs['Space Slug'] + '/submissions/' + @results['Create Approval']['submissionId']%&gt;</parameter>
+                    <parameter id="To" label="To" menu="" required="true" tooltip="Recipient">&lt;%=@results['Retrieve Approver']['email']%&gt;</parameter>
+                    <parameter id="From" label="From" menu="" required="false" tooltip="Friendly Name">wally@kineticdata.com</parameter>
+                    <parameter id="Reply-To" label="Reply-To" menu="" required="true" tooltip="From Email Address">noreply@kineticdata.com</parameter>
+                    <parameter id="CC" label="CC" menu="" required="false" tooltip=""/>
+                    <parameter id="BCC" label="BCC" menu="" required="false" tooltip=""/>
+                    <parameter id="Subject" label="Subject" menu="" required="true" tooltip="">&lt;%=@inputs['Summary']%&gt;</parameter>
+                </parameters><messages>
+                <message type="Create"/>
+                <message type="Update"/>
+                <message type="Complete"/>
+              </messages>
+              <dependents/>
+            </task>
+              
+            
+          </request>
+                    </taskTree>
+</tree>

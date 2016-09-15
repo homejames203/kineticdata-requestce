@@ -1,0 +1,624 @@
+<tree schema_version="1.0">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_kapp_fulfillment_workorder_create</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+                        <name>KAPP Fulfillment - Work Order Create</name>
+                        <author/>
+                        <notes/>
+                        <lastID>91</lastID>
+                        <taskDefinition id="routine_kapp_fulfillment_workorder_create" name="KAPP Fulfillment - Work Order Create" schema_version="1.0" version="1">
+                <visible>false</visible>
+                <deferrable>true</deferrable>
+                <parameters>
+                    <parameter id="Name" label="Name" required="true" tooltip="Name of What the Work Order Does"/>
+                    <parameter id="Space Slug" label="Space Slug" required="true" tooltip="Space Slug that the records exist in"/>
+                    <parameter id="Kapp Slug" label="Kapp Slug" required="true" tooltip="Kapp Slug the Work Order Template Exists In (usually fulfillment)"/>
+                    <parameter id="Work Order Form Slug" label="Work Order Form Slug" required="true" tooltip="Slug of the Work Order Form in the Fulfillment KAPP"/>
+                    <parameter id="Details" label="Details" required="false" tooltip="Details to display on work order for person working"/>
+                    <parameter id="Days Due" label="Days Due" required="true" tooltip="Number of Days from now that the work order is due"/>
+                    <parameter id="Assignee Group" label="Assignee Group" required="true" tooltip="Separate with double :'s (ex. &quot;Test::Test::Test&quot;)"/>
+                    <parameter id="Assignee Login ID" label="Assignee Login ID" required="false" tooltip="Login ID of the Person the Work Order should be assigned to"/>
+                    <parameter id="Originating System" label="Originating System" required="true" tooltip="System the fulfillment originates. (ex Kinetic Core)"/>
+                    <parameter id="Originating ID" label="Originating ID" required="true" tooltip="ID of the Originating Request"/>
+                    <parameter id="System Input" label="System Input" required="false" tooltip="Structured data for system support"/>
+                </parameters>
+                <handler name="system_tree_call" version="1"/>
+                <results format="xml">
+                    <result name="Work Order ID" tooltip="Submission ID of the completed work order"/>
+                    <result name="Fulfiller" tooltip="Person who worked the work order"/>
+                </results>
+            </taskDefinition>
+                        <request>
+                            <task definition_id="system_start_v1" id="start" name="Start" x="66" y="-267">
+                                <version>1</version>
+                                <configured>true</configured>
+                                <defers>false</defers>
+                                <deferrable>false</deferrable>
+                                <visible>false</visible>
+                                <parameters/>
+                                <messages/>
+                                <dependents>
+                                    
+                                
+                                
+                            <task label="" type="Complete" value="">system_noop_v1_55</task>
+                            </dependents>
+                            </task>
+                        
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_38" name="Manual Routine Return" x="1039" y="-22">
+                          <version>1</version>
+                          <configured>true</configured>
+                          <defers>false</defers>
+                          <deferrable>false</deferrable>
+                          <visible>false</visible>
+                          <parameters>
+                            <parameter id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+                            <parameter id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%=@run['Token']%&gt;</parameter>
+                            <parameter id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;%
+                @answerValues = @results['Retrieve Fulfillment Values']
+                %&gt;
+                &lt;%=
+                    result = "&lt;results&gt;
+                    &lt;result name='Fulfiller'&gt;#{@answerValues['Assigned Individual']}&lt;/result&gt;
+                    &lt;result name='Work Order ID'&gt;#{@results['Create Fulfillment Record']['submissionId']}&lt;/result&gt;
+                    &lt;result name='Work Order Instance ID'&gt;#{@results['Create Fulfillment Record']['submissionId']}&lt;/result&gt;
+                    "
+                    @answerValues.each do |key, value|
+                      result += %|&lt;result name="#{key}"&gt;#{value}&lt;/result&gt;|
+                    end
+                    result += "&lt;/results&gt;"
+                    result
+                    %&gt;</parameter>
+                            <parameter id="message" label="Message" menu="" required="false" tooltip=""/>
+                        </parameters>
+                                <messages>
+                            <message type="Create"/>
+                            <message type="Update"/>
+                            <message type="Complete"/>
+                          </messages>
+                          <dependents/>
+                        </task>
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                            
+                          
+                        <task definition_id="utilities_defer_v1" id="utilities_defer_v1_46" name="Defer - Fulfillment" x="513" y="88">
+                      <version>1</version>
+                      <configured>true</configured>
+                      <defers>true</defers>
+                      <deferrable>true</deferrable>
+                      <visible>false</visible>
+                      <parameters>
+                        <parameter id="deferral_value" label="Initial Deferral Value" menu="" required="false" tooltip=""/>
+                    </parameters>
+                            <messages>
+                        <message type="Create"/>
+                        <message type="Update"/>
+                        <message type="Complete"/>
+                      </messages>
+                      <dependents>
+                                
+                                
+                            
+                                
+                            
+                            
+                        <task label="" type="Create" value="">kinetic_request_ce_submission_create_v1_81</task>
+                        
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_update_v1_88</task></dependents>
+                    </task>
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        <task definition_id="system_noop_v1" id="system_noop_v1_55" name="Begin Lookup Process" x="66" y="-195">
+                      <version>1</version>
+                      <configured>true</configured>
+                      <defers>false</defers>
+                      <deferrable>false</deferrable>
+                      <visible>false</visible>
+                      <parameters/>
+                            <messages>
+                        <message type="Create"/>
+                        <message type="Update"/>
+                        <message type="Complete"/>
+                      </messages>
+                      <dependents>
+                                
+                                
+                            
+                        
+                        <task label="" type="Complete" value="">kinetic_request_ce_submission_retrieve_v1_80</task>
+                        <task label="Assignee Specified" type="Complete" value="!@inputs['Assignee Login ID'].nil?">kinetic_request_ce_user_retrieve_v1_87</task>
+                    </dependents>
+                    </task>
+                      
+                        
+                      
+                        <task definition_id="system_junction_v1" id="system_junction_v1_57" name="Lookups Completed" x="253" y="82">
+                          <version>1</version>
+                          <configured>true</configured>
+                          <defers>false</defers>
+                          <deferrable>false</deferrable>
+                          <visible>false</visible>
+                          <parameters/>
+                                <messages>
+                            <message type="Create"/>
+                            <message type="Update"/>
+                            <message type="Complete"/>
+                          </messages>
+                          <dependents>
+                                <task label="" type="Complete" value="">utilities_defer_v1_46</task>
+                            </dependents>
+                        </task>
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                        
+                      
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                    
+                  
+                <task definition_id="kinetic_request_ce_submission_retrieve_v1" id="kinetic_request_ce_submission_retrieve_v1_80" name="Retrieve Parent Submission" x="242" y="-202">
+              <version>1</version>
+              <configured>true</configured>
+              <defers>false</defers>
+              <deferrable>false</deferrable>
+              <visible>false</visible>
+              <parameters>
+                <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from.">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+                <parameter id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission being retrieved.">&lt;%=@inputs['Originating ID']%&gt;</parameter>
+            </parameters>
+                    <messages>
+                <message type="Create"/>
+                <message type="Update"/>
+                <message type="Complete"/>
+              </messages>
+              <dependents>
+                        <task label="" type="Complete" value="">kinetic_request_ce_user_retrieve_v1_82</task>
+                        <task label="" type="Complete" value="">kinetic_request_ce_kapp_retrieve_v1_83</task>
+                    </dependents>
+            </task>
+              
+                <task definition_id="kinetic_request_ce_submission_create_v1" id="kinetic_request_ce_submission_create_v1_81" name="Create Fulfillment Record" x="616" y="176">
+              <version>1</version>
+              <configured>true</configured>
+              <defers>false</defers>
+              <deferrable>false</deferrable>
+              <visible>false</visible>
+              <parameters>
+                <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from.">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+                <parameter id="kapp_slug" label="Kapp Slug:" menu="" required="true" tooltip="The slug of the Kapp the submission is for.">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
+                <parameter id="form_slug" label="Form Slug:" menu="" required="true" tooltip="The slug of the form the submission is for.">&lt;%=@inputs['Work Order Form Slug']%&gt;</parameter>
+                <parameter id="values" label="Values:" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%=
+                assigneeId = ""
+                assigneeName = ""
+                requestedById = ""
+                requestedByName = ""
+                requestedForId = ""
+                requestedForName = ""
+                details = ""
+                dueDate = (DateTime.now + @inputs['Days Due'].to_i).iso8601
+                
+                if @results.has_key?('Retrieve Assignee Details') 
+                  assigneeId = @results['Retrieve Assignee Details']['username']
+                  assigneeName = @results['Retrieve Assignee Details']['username']
+                end
+                if @results.has_key?('Retrieve Parent Requested By') 
+                  requestedById = @results['Retrieve Parent Requested By']['username']
+                  requestedByName = @results['Retrieve Parent Requested By']['display_name']
+                end
+                if @results.has_key?('Retrieve Parent Requested For') 
+                  requestedForId = @results['Retrieve Parent Requested For']['username']
+                  requestedForName = @results['Retrieve Parent Requested For']['display_name']
+                end
+                requestedForName.nil? ? details = @inputs['Details'] : details = "Requested By: " + requestedByName + "\n" + @inputs['Details']
+                
+                {
+                	"Assigned Group" =&gt; @inputs['Assignee Group'],
+                    "Assigned Group Display Name" =&gt; @inputs['Assignee Group'],
+                	"Assigned Individual" =&gt; assigneeId,
+                	"Assigned Individual Display Name"  =&gt; assigneeName,
+                	"Due Date" =&gt; dueDate,
+                	"Deferral Token"  =&gt; @results['Defer - Fulfillment']['deferral_token'],
+                	"Requested By" =&gt;  requestedById ,
+                	"Requested By Display Name"  =&gt;  requestedByName ,
+                	"Requested For" =&gt;  requestedForId ,
+                	"Requested For Display Name" =&gt;  requestedForName ,
+                	"Status" =&gt; "Open",
+                	"Ready To Work" =&gt; "Ready",
+                	"Details"  =&gt; details,
+                	"Work Order Displayed Name"  =&gt; @inputs['Name'],
+                	"Parent Submission Id" =&gt; @inputs['Originating ID']
+                }.to_json
+                
+                %&gt;</parameter>
+                <parameter id="current_page_name" label="Current Page Name:" menu="" required="false" tooltip="Set the current page name."/>
+                <parameter id="current_page_navigation" label="Current Page Navigation:" menu="" required="false" tooltip="Set the current page navigation."/>
+                <parameter id="origin_id" label="Origin ID:" menu="" required="false" tooltip="Set the origin ID.">&lt;%=@inputs['Originating ID']%&gt;</parameter>
+                <parameter id="parent_id" label="Parent ID:" menu="" required="false" tooltip="Set the parent ID."/>
+            </parameters>
+                    <messages>
+                <message type="Create"/>
+                <message type="Update"/>
+                <message type="Complete"/>
+              </messages>
+              <dependents>
+                        
+                    <task type="Complete" label="Assignee Specified" value="!@inputs['Assignee Login ID'].nil?">routine_kd_core_message_template_v1_89</task></dependents>
+            </task>
+              
+                <task definition_id="kinetic_request_ce_user_retrieve_v1" id="kinetic_request_ce_user_retrieve_v1_82" name="Retrieve Parent Requested By" x="397" y="-210">
+              <version>1</version>
+              <configured>true</configured>
+              <defers>false</defers>
+              <deferrable>false</deferrable>
+              <visible>false</visible>
+              <parameters>
+                <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from.">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+                <parameter id="username" label="Username:" menu="" required="true" tooltip="The unique username for the user.">&lt;%=@results['Retrieve Parent Submission']['createdBy']%&gt;</parameter>
+            </parameters>
+                    <messages>
+                <message type="Create"/>
+                <message type="Update"/>
+                <message type="Complete"/>
+              </messages>
+              <dependents>
+                        
+                    <task type="Complete" label="" value="">kinetic_request_ce_kapp_retrieve_v1_91</task></dependents>
+            </task>
+              
+                <task definition_id="kinetic_request_ce_kapp_retrieve_v1" id="kinetic_request_ce_kapp_retrieve_v1_83" name="Retrieve Fulfillment KAPP" x="243" y="-73">
+              <version>1</version>
+              <configured>true</configured>
+              <defers>false</defers>
+              <deferrable>false</deferrable>
+              <visible>false</visible>
+              <parameters>
+                <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from.">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+                <parameter id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The Kapp being retrieved from.">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
+            </parameters>
+                    <messages>
+                <message type="Create"/>
+                <message type="Update"/>
+                <message type="Complete"/>
+              </messages>
+              <dependents>
+                        <task label="" type="Complete" value="">system_junction_v1_57</task>
+                    </dependents>
+            </task>
+              
+                <task definition_id="kinetic_request_ce_submission_get_answers_v1" id="kinetic_request_ce_submission_get_answers_v1_84" name="Retrieve Fulfillment Values" x="913" y="-21">
+              <version>1</version>
+              <configured>true</configured>
+              <defers>false</defers>
+              <deferrable>false</deferrable>
+              <visible>false</visible>
+              <parameters>
+                <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from.">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+                <parameter id="submission_id" label="Submission ID" menu="" required="true" tooltip="The id of the submission to retrieve answers for.">&lt;%=@results['Create Fulfillment Record']['submissionId']%&gt;</parameter>
+            </parameters>
+                    <messages>
+                <message type="Create"/>
+                <message type="Update"/>
+                <message type="Complete"/>
+              </messages>
+              <dependents>
+                        <task label="" type="Complete" value="">utilities_create_trigger_v1_38</task>
+                    </dependents>
+            </task>
+              
+                <task definition_id="kinetic_request_ce_submission_close_v1" id="kinetic_request_ce_submission_close_v1_85" name="Close fulfillment" x="778" y="-10">
+              <version>1</version>
+              <configured>true</configured>
+              <defers>false</defers>
+              <deferrable>false</deferrable>
+              <visible>false</visible>
+              <parameters>
+                <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from.">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+                <parameter id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=@results['Create Fulfillment Record']['submissionId']%&gt;</parameter>
+            </parameters>
+                    <messages>
+                <message type="Create"/>
+                <message type="Update"/>
+                <message type="Complete"/>
+              </messages>
+              <dependents>
+                        
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_get_answers_v1_84</task></dependents>
+            </task>
+              
+                <task definition_id="smtp_email_send_v1" id="smtp_email_send_v1_86" name="Send Assignee Emaild" x="824" y="-242">
+              <version>1</version>
+              <configured>true</configured>
+              <defers>false</defers>
+              <deferrable>false</deferrable>
+              <visible>false</visible>
+              <parameters>
+                <parameter id="from" label="From (email address)" menu="" required="true" tooltip="The email address of the simulated sender.">wally@kineticdata.com</parameter>
+                <parameter id="to" label="To (email address)" menu="" required="true" tooltip="The email address of the intended recipient.">&lt;%=@results['Retrieve Assignee Details']['email']%&gt;</parameter>
+                <parameter id="subject" label="Subject" menu="" required="false" tooltip="The subject of the email.">You've got work to do... | &lt;%=@inputs['Name']%&gt;</parameter>
+                <parameter id="htmlbody" label="HTML Body" menu="" required="false" tooltip="HTML representing the body of a rich email.">A(n) &lt;%=@inputs['Name']%&gt; just came in and has been assigned to you. 
+        
+        
+        Work Order URL: &lt;%=JSON.parse(@results['Retrieve Fulfillment KAPP']['attributes'])['Web Server Url'] + "/" + @inputs['Space Slug'] + "/submissions/" + @results['Create Fulfillment Record']['submissionId']%&gt;</parameter>
+                <parameter id="textbody" label="Alternate (text) Body" menu="" required="false" tooltip="A plaintext message that will be displayed if the recipient can't display multipart HTML emails."/>
+            </parameters>
+                    <messages>
+                <message type="Create"/>
+                <message type="Update"/>
+                <message type="Complete"/>
+              </messages>
+              <dependents/>
+            </task>
+              
+                <task definition_id="kinetic_request_ce_user_retrieve_v1" id="kinetic_request_ce_user_retrieve_v1_87" name="Retrieve Assignee Details" x="66" y="65">
+              <version>1</version>
+              <configured>true</configured>
+              <defers>false</defers>
+              <deferrable>false</deferrable>
+              <visible>false</visible>
+              <parameters>
+                <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from.">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+                <parameter id="username" label="Username:" menu="" required="true" tooltip="The unique username for the user.">&lt;%=@inputs['Assignee Login ID']%&gt;</parameter>
+            </parameters>
+                    <messages>
+                <message type="Create"/>
+                <message type="Update"/>
+                <message type="Complete"/>
+              </messages>
+              <dependents>
+                        <task label="" type="Complete" value="">system_junction_v1_57</task>
+                    </dependents>
+            </task>
+              
+                <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_88" name="Update Status to Completed" x="661" y="-12">
+              <version>1</version>
+              <configured>true</configured>
+              <defers>false</defers>
+              <deferrable>false</deferrable>
+              <visible>false</visible>
+              <parameters>
+                <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from.">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+                <parameter id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=@results['Create Fulfillment Record']['submissionId']%&gt;</parameter>
+                <parameter id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."/>
+                <parameter id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">&lt;%=
+        {
+          "Status" =&gt; "Completed"
+        }.to_json
+        %&gt;</parameter>
+                <parameter id="current_page_name" label="Current Page Name:" menu="" required="false" tooltip="Set the current page name."/>
+                <parameter id="current_page_navigation" label="Current Page Navigation:" menu="" required="false" tooltip="Set the current page navigation."/>
+                <parameter id="origin_id" label="Origin ID:" menu="" required="false" tooltip="Set the origin ID."/>
+                <parameter id="parent_id" label="Parent ID:" menu="" required="false" tooltip="Set the parent ID."/>
+            </parameters><messages>
+                <message type="Create"/>
+                <message type="Update"/>
+                <message type="Complete"/>
+              </messages>
+              <dependents><task label="" type="Complete" value="">kinetic_request_ce_submission_close_v1_85</task></dependents>
+            </task>
+              
+            <task name="Send Assignee Email" id="routine_kd_core_message_template_v1_89" definition_id="routine_kd_core_message_template_v1" x="854" y="122">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>true</deferrable>
+          <visible>false</visible>
+          <parameters>
+                    <parameter id="Title" label="Title" required="false" tooltip="The title that shows up next to the KD logo" menu="">&lt;%=@inputs['Name']%&gt; just came in and has been assigned to you. </parameter>
+                    <parameter id="HTML Body" label="HTML Body" required="false" tooltip="The body that shows up inside the KD Wrapper" menu="">&lt;%=@inputs['Name']%&gt; just came in and has been assigned to you. 
+        
+    &lt;p style="white-space: pre-line;"&gt;&lt;%=@inputs['Details']%&gt;&lt;/p&gt;
+        
+        &lt;table width="100%" border="0" cellspacing="0" cellpadding="0"&gt;
+            &lt;tr&gt;
+                
+                &lt;td align="center"&gt;
+                    &lt;!-- BULLETPROOF BUTTON --&gt;
+                    &lt;table width="100%" border="0" cellspacing="0" cellpadding="0"&gt;
+                        &lt;tr&gt;
+                            &lt;td align="center" style="padding-top: 25px;" class="padding"&gt;
+                                &lt;table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container"&gt;
+                                    &lt;tr&gt;
+                                        &lt;td align="center" style="border-radius: 3px;" bgcolor="#256F9C"&gt;&lt;a href="&lt;%=@results['Web Server Url']['output'] + '/' + @inputs['Space Slug'] + '/ticket#/filter/__default__details/' + @results['Create Fulfillment Record']['submissionId'] + '/work'%&gt;" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; border-radius: 3px; padding: 15px 25px; border: 1px solid #256F9C; display: inline-block;" class="mobile-button"&gt;Work It!&lt;/a&gt;&lt;/td&gt;
+                                    &lt;/tr&gt;
+                                &lt;/table&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/table&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;</parameter>
+                    <parameter id="Plain Text Body" label="Plain Text Body" required="false" tooltip="The text that shows up in the plain text version of the email" menu=""/>
+                    <parameter id="To" label="To" required="true" tooltip="Recipient" menu="">&lt;%=@results['Retrieve Assignee Details']['email']%&gt;</parameter>
+                    <parameter id="From" label="From" required="false" tooltip="Friendly Name" menu="">wally@kineticdata.com</parameter>
+                    <parameter id="Reply-To" label="Reply-To" required="true" tooltip="From Email Address" menu="">noreply@kineticdata.com</parameter>
+                    <parameter id="CC" label="CC" required="false" tooltip="" menu=""/>
+                    <parameter id="BCC" label="BCC" required="false" tooltip="" menu=""/>
+                    <parameter id="Subject" label="Subject" required="true" tooltip="" menu="">You've got work to do... -  &lt;%=@inputs['Name']%&gt;</parameter>
+                </parameters><messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents/>
+        </task>
+          
+            <task name="Web Server Url" id="utilities_echo_v1_90" definition_id="utilities_echo_v1" x="394" y="19">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>false</deferrable>
+          <visible>false</visible>
+          <parameters>
+            <parameter id="input" label="Input" required="true" tooltip="" menu="">&lt;%=
+            # Check if there is a KAPP attribute Called Web Server Url. If none exists return none
+            attributes = JSON.parse(@results['Retrieve Catalog Kapp']['attributes'])
+            attributes.select {|h| h["name"] == "Web Server Url" }.length &gt; 0 ? attributes.select {|h| h["name"] == "Web Server Url" }[0]["values"][0] : "none"
+            %&gt;</parameter>
+        </parameters><messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents><task type="Complete" label="" value="">system_junction_v1_57</task></dependents>
+        </task>
+          
+            <task name="Retrieve Catalog Kapp" id="kinetic_request_ce_kapp_retrieve_v1_91" definition_id="kinetic_request_ce_kapp_retrieve_v1" x="396" y="-89">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>false</deferrable>
+          <visible>false</visible>
+          <parameters>
+            <parameter id="space_slug" label="Space Slug" required="false" tooltip="The Space the submission is being retrieved from." menu="">&lt;%=@inputs['Space Slug']%&gt;</parameter>
+            <parameter id="kapp_slug" label="Kapp Slug" required="true" tooltip="The Kapp being retrieved from." menu="">catalog</parameter>
+        </parameters><messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents><task type="Complete" label="" value="">utilities_echo_v1_90</task></dependents>
+        </task>
+          </request>
+                    </taskTree>
+</tree>

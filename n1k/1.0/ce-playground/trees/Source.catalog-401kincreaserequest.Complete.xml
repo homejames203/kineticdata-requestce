@@ -1,0 +1,289 @@
+<tree schema_version="1.0">
+    <sourceName>CE Playground</sourceName>
+    <sourceGroup>catalog > 401k-increase-request</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree schema_version="1.0" version="" builder_version="">
+        <name>Complete</name>
+        <author/>
+        <notes/>
+        <lastID>11</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="11" y="11">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters/>
+                <messages/>
+                <dependents><task type="Complete" label="" value="">kinetic_request_ce_user_retrieve_v1_1</task></dependents>
+            </task>
+        
+            <task name="Lookup User" id="kinetic_request_ce_user_retrieve_v1_1" definition_id="kinetic_request_ce_user_retrieve_v1" x="146.6875" y="99.6875">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>false</deferrable>
+          <visible>false</visible>
+          <parameters>
+            <parameter id="space_slug" label="Space Slug" required="false" tooltip="The Space the submission is being retrieved from." menu="">&lt;%= @space['Slug']%&gt;</parameter>
+            <parameter id="username" label="Username:" required="true" tooltip="The unique username for the user." menu="">&lt;%= @submission['Created By']%&gt;</parameter>
+        </parameters><messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents><task type="Complete" label="" value="">routine_kd_core_message_template_v1_2</task></dependents>
+        </task>
+          
+            <task name="Send Requester Email" id="routine_kd_core_message_template_v1_2" definition_id="routine_kd_core_message_template_v1" x="143" y="208">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>true</deferrable>
+          <visible>false</visible>
+          <parameters>
+                    <parameter id="Title" label="Title" required="false" tooltip="The title that shows up next to the KD logo" menu="">Your &lt;%= @form['Name']%&gt; has been Submitted</parameter>
+                    <parameter id="HTML Body" label="HTML Body" required="false" tooltip="The body that shows up inside the KD Wrapper" menu="">&lt;p&gt;Thanks for using the Self Service Catalog to place your &lt;%=@form['Name']%&gt;. We'll get right to work and let you know when your request has been completed. &lt;/p&gt;
+        
+        &lt;table width="100%" border="0" cellspacing="0" cellpadding="0"&gt;
+            &lt;tr&gt;
+                &lt;td align="center"&gt;
+                    &lt;!-- BULLETPROOF BUTTON --&gt;
+                    &lt;table width="100%" border="0" cellspacing="0" cellpadding="0"&gt;
+                        &lt;tr&gt;
+                            &lt;td align="center" style="padding-top: 25px;" class="padding"&gt;
+                                &lt;table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container"&gt;
+                                    &lt;tr&gt;
+                                        &lt;td align="center" style="border-radius: 3px;" bgcolor="#256F9C"&gt;&lt;a href="&lt;%= @kapp_attributes['Web Server Url'] + '/' + @space['Slug']  + '/' + @kapp['Slug']  + '?page=submission&amp;id=' + @submission['Id']%&gt;" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; border-radius: 3px; padding: 15px 25px; border: 1px solid #256F9C; display: inline-block;" class="mobile-button"&gt;View Submitted Request&lt;/a&gt;&lt;/td&gt;
+                                    &lt;/tr&gt;
+                                &lt;/table&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/table&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;</parameter>
+                    <parameter id="Plain Text Body" label="Plain Text Body" required="false" tooltip="The text that shows up in the plain text version of the email" menu=""/>
+                    <parameter id="To" label="To" required="true" tooltip="Recipient" menu="">&lt;%=@results['Lookup User']['email']%&gt;</parameter>
+                    <parameter id="From" label="From" required="false" tooltip="Friendly Name" menu="">wally@kineticdata.com</parameter>
+                    <parameter id="Reply-To" label="Reply-To" required="true" tooltip="From Email Address" menu="">noreply@kineticdata.com</parameter>
+                    <parameter id="CC" label="CC" required="false" tooltip="" menu=""/>
+                    <parameter id="BCC" label="BCC" required="false" tooltip="" menu=""/>
+                    <parameter id="Subject" label="Subject" required="true" tooltip="" menu="">Your &lt;%=@form['Name']%&gt; has been Submitted</parameter>
+                </parameters><messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents><task type="Complete" label="Requires Individual Approval" value="@form_attributes['Approval Group'].nil? &amp;&amp; !@form_attributes['Approval Form Slug'].nil?">routine_approval_create_individual_4</task><task type="Complete" label="Requires Group Approval" value="@form_attributes['Approval Individual'].nil? &amp;&amp; !@form_attributes['Approval Group'].nil? &amp;&amp; !@form_attributes['Approval Form Slug'].nil?">utilities_echo_v1_5</task><task type="Complete" label="No Approval Required" value="@form_attributes['Approval Individual'].nil? &amp;&amp; @form_attributes['Approval Group'].nil? &amp;&amp; @form_attributes['Approval Form Slug'].nil?">system_junction_v1_3</task></dependents>
+        </task>
+          
+            <task name="system_junction_v1_3" id="system_junction_v1_3" definition_id="system_junction_v1" x="572" y="209">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>false</deferrable>
+          <visible>false</visible>
+          <parameters/><messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents><task type="Complete" label="Requires Fulfillment" value="!@form_attributes['Fulfillment Form Slug'].nil?">routine_kapp_fulfillment_workorder_create_7</task><task type="Complete" label="No Fulfillment Required" value="@form_attributes['Fulfillment Form Slug'].nil?">system_junction_v1_8</task></dependents>
+        </task>
+          
+            <task name="Individual Approval" id="routine_approval_create_individual_4" definition_id="routine_approval_create_individual" x="561" y="363">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>true</defers>
+          <deferrable>true</deferrable>
+          <visible>true</visible>
+          <parameters>
+                    <parameter id="Space Slug" label="Space Slug" required="true" tooltip="Slug of the Space" menu="">&lt;%=@space['Slug']%&gt;</parameter>
+                    <parameter id="Kapp Slug" label="Kapp Slug" required="true" tooltip="Kapp which the Approval Form is in" menu="">&lt;%= @kapp['Slug']%&gt;</parameter>
+                    <parameter id="Approval Form Slug" label="Approval Form Slug" required="true" tooltip="Slug of Approval Form to be used" menu="">&lt;%= @form_attributes['Approval Form Slug'] %&gt;</parameter>
+                    <parameter id="Approver ID" label="Approver ID" required="true" tooltip="CE Login ID of Approver" menu="">&lt;%=@form_attributes['Approval Individual'].nil? ? @submission['Created By'] : @form_attributes['Approval Individual']%&gt;</parameter>
+                    <parameter id="Summary" label="Summary" required="true" tooltip="Short description for approver (used in submission label and email subject)" menu="">&lt;%=@form['Name']%&gt; requires your approval - &lt;%=@submission['Created By']%&gt;</parameter>
+                    <parameter id="Details" label="Details" required="true" tooltip="Long description for approver" menu="">Details:
+        
+        &lt;% output = ""
+         if !@values.nil?
+           @values.each_pair {|key,value| 
+              !value.nil? ? output = output + key + " : " + value.to_s + "\n" : ""} 
+         end
+        %&gt;&lt;%=output%&gt;</parameter>
+                    <parameter id="Originating System" label="Originating System" required="false" tooltip="Source of Parent Submission (Kinetic Core, Salesforce)" menu="">Kinetic Core</parameter>
+                    <parameter id="Originating ID" label="Originating ID" required="false" tooltip="ID of Parent Submission" menu="">&lt;%=@submission['Id']%&gt;</parameter>
+                    <parameter id="Review Url" label="Review Url" required="false" tooltip="URL to review originating record" menu="">&lt;%= @kapp_attributes['Web Server Url'] + '/' + @space['Slug']  + '/' + @kapp['Slug']  + '?page=submission&amp;id=' + @submission['Id']%&gt;</parameter>
+                    <parameter id="System Input" label="System Input" required="false" tooltip="Structured data for system support" menu=""/>
+                </parameters><messages>
+            <message type="Create">Approval Sent To: &lt;%=@form_attributes['Approval Individual'].nil? ? @submission['Created By'] : @form_attributes['Approval Individual']%&gt;</message>
+            <message type="Update"/>
+            <message type="Complete">Approval &lt;%=@results['Individual Approval']['Decision']%&gt; By: &lt;%=@results['Individual Approval']['Approver ID']%&gt;</message>
+          </messages>
+          <dependents><task type="Complete" label="Approved" value="@results['Individual Approval']['Decision'] == &quot;Approved&quot;">system_junction_v1_3</task><task type="Complete" label="Denied" value="@results['Individual Approval']['Decision'] != &quot;Approved&quot;">system_join_v1_6</task></dependents>
+        </task>
+          
+            <task name="Group Approval - Not Configured" id="utilities_echo_v1_5" definition_id="utilities_echo_v1" x="143" y="462">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>false</deferrable>
+          <visible>true</visible>
+          <parameters>
+            <parameter id="input" label="Input" required="true" tooltip="" menu=""/>
+        </parameters><messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents><task type="Complete" label="Denied" value="@results['Group Approval - Not Configured']['output'] == &quot;Denied&quot;">system_join_v1_6</task><task type="Complete" label="Approved" value="@results['Group Approval - Not Configured']['output'] == &quot;Approved&quot;">system_junction_v1_3</task></dependents>
+        </task>
+          
+            <task name="system_join_v1_6" id="system_join_v1_6" definition_id="system_join_v1" x="566.6875" y="505.6875">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>false</deferrable>
+          <visible>false</visible>
+          <parameters>
+            <parameter id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Some</parameter>
+            <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" required="false" tooltip="If some, how many?" menu="">1</parameter>
+        </parameters><messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents><task type="Complete" label="" value="">routine_kd_core_message_template_v1_9</task></dependents>
+        </task>
+          
+            <task name="Fulfillment" id="routine_kapp_fulfillment_workorder_create_7" definition_id="routine_kapp_fulfillment_workorder_create" x="913" y="198">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>true</defers>
+          <deferrable>true</deferrable>
+          <visible>true</visible>
+          <parameters>
+                    <parameter id="Name" label="Name" required="true" tooltip="Name of What the Work Order Does" menu="">&lt;%=@form['Name']%&gt; Fulfillment</parameter>
+                    <parameter id="Space Slug" label="Space Slug" required="true" tooltip="Space Slug that the records exist in" menu="">&lt;%=@space['Slug']%&gt;</parameter>
+                    <parameter id="Kapp Slug" label="Kapp Slug" required="true" tooltip="Kapp Slug the Work Order Template Exists In (usually fulfillment)" menu="">ticket</parameter>
+                    <parameter id="Work Order Form Slug" label="Work Order Form Slug" required="true" tooltip="Slug of the Work Order Form in the Fulfillment KAPP" menu="">&lt;%= @form_attributes['Fulfillment Form Slug'] %&gt;</parameter>
+                    <parameter id="Details" label="Details" required="false" tooltip="Details to display on work order for person working" menu="">Answers from Submitted Form
+    </parameter>
+                    <parameter id="Days Due" label="Days Due" required="true" tooltip="Number of Days from now that the work order is due" menu="">3</parameter>
+                    <parameter id="Assignee Group" label="Assignee Group" required="true" tooltip="Separate with double :'s (ex. &quot;Test::Test::Test&quot;)" menu="">&lt;%= @form_attributes['Fulfillment Group'] %&gt;</parameter>
+                    <parameter id="Assignee Login ID" label="Assignee Login ID" required="false" tooltip="Login ID of the Person the Work Order should be assigned to" menu="">&lt;% fulfillmentIndividual = nil
+       if !@form_attributes['Fulfillment Individual'].nil? 
+          if @form_attributes['Fulfillment Individual'].downcase == "self"
+            fulfillmentIndividual = @submission['Created By']
+          else
+            fulfillmentIndividual = @form_attributes['Fulfillment Individual']
+          end
+       end
+    %&gt;&lt;%=fulfillmentIndividual%&gt;
+    </parameter>
+                    <parameter id="Originating System" label="Originating System" required="true" tooltip="System the fulfillment originates. (ex Kinetic Core)" menu="">Kinetic Core</parameter>
+                    <parameter id="Originating ID" label="Originating ID" required="true" tooltip="ID of the Originating Request" menu="">&lt;%=@submission['Id']%&gt;</parameter>
+                    <parameter id="System Input" label="System Input" required="false" tooltip="Structured data for system support" menu=""/>
+                </parameters><messages>
+            <message type="Create">Workorder Has been Created and assigned to the &lt;%= @form_attributes['Fulfillment Group'] %&gt; Group</message>
+            <message type="Update"/>
+            <message type="Complete">Workorder was completed by &lt;%=@results['Fulfillment']['Fulfiller']%&gt;</message>
+          </messages>
+          <dependents><task type="Complete" label="" value="">system_junction_v1_8</task></dependents>
+        </task>
+          
+            <task name="system_junction_v1_8" id="system_junction_v1_8" definition_id="system_junction_v1" x="934.6875" y="360.6875">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>false</deferrable>
+          <visible>false</visible>
+          <parameters/><messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents><task type="Complete" label="" value="">kinetic_request_ce_submission_close_v1_10</task></dependents>
+        </task>
+          
+            <task name="Send Denial Message" id="routine_kd_core_message_template_v1_9" definition_id="routine_kd_core_message_template_v1" x="755" y="424">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>true</deferrable>
+          <visible>false</visible>
+          <parameters>
+                    <parameter id="Title" label="Title" required="false" tooltip="The title that shows up next to the KD logo" menu="">Your &lt;%=@form['Name']%&gt; request has been denied.</parameter>
+                    <parameter id="HTML Body" label="HTML Body" required="false" tooltip="The body that shows up inside the KD Wrapper" menu="">&lt;p&gt;Thanks for using the Self Service Catalog to place your &lt;%=@form['Name']%&gt;. We'll get right to work and let you know when your request has been completed. &lt;/p&gt;
+        
+        &lt;table width="100%" border="0" cellspacing="0" cellpadding="0"&gt;
+            &lt;tr&gt;
+                &lt;td align="center"&gt;
+                    &lt;!-- BULLETPROOF BUTTON --&gt;
+                    &lt;table width="100%" border="0" cellspacing="0" cellpadding="0"&gt;
+                        &lt;tr&gt;
+                            &lt;td align="center" style="padding-top: 25px;" class="padding"&gt;
+                                &lt;table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container"&gt;
+                                    &lt;tr&gt;
+                                        &lt;td align="center" style="border-radius: 3px;" bgcolor="#256F9C"&gt;&lt;a href="&lt;%= @kapp_attributes['Web Server Url'] + '/' + @space['Slug']  + '/' + @kapp['Slug']  + '?page=submission&amp;id=' + @submission['Id']%&gt;" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; border-radius: 3px; padding: 15px 25px; border: 1px solid #256F9C; display: inline-block;" class="mobile-button"&gt;View Submitted Request&lt;/a&gt;&lt;/td&gt;
+                                    &lt;/tr&gt;
+                                &lt;/table&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/table&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;</parameter>
+                    <parameter id="Plain Text Body" label="Plain Text Body" required="false" tooltip="The text that shows up in the plain text version of the email" menu=""/>
+                    <parameter id="To" label="To" required="true" tooltip="Recipient" menu="">&lt;%=@results['Lookup User']['email']%&gt;</parameter>
+                    <parameter id="From" label="From" required="false" tooltip="Friendly Name" menu="">wally@kineticdata.com</parameter>
+                    <parameter id="Reply-To" label="Reply-To" required="true" tooltip="From Email Address" menu="">noreply@kineticdata.com</parameter>
+                    <parameter id="CC" label="CC" required="false" tooltip="" menu=""/>
+                    <parameter id="BCC" label="BCC" required="false" tooltip="" menu=""/>
+                    <parameter id="Subject" label="Subject" required="true" tooltip="" menu="">Your &lt;%=@form['Name']%&gt; request has been denied.</parameter>
+                </parameters><messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents><task type="Complete" label="" value="">system_junction_v1_8</task></dependents>
+        </task>
+          
+            <task name="Close Submission" id="kinetic_request_ce_submission_close_v1_10" definition_id="kinetic_request_ce_submission_close_v1" x="938" y="482">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>false</deferrable>
+          <visible>false</visible>
+          <parameters>
+            <parameter id="space_slug" label="Space Slug" required="false" tooltip="The Space the submission is being retrieved from." menu="">&lt;%=@space['Slug']%&gt;</parameter>
+            <parameter id="submission_id" label="Submission Id" required="true" tooltip="The id of the submission being updated." menu="">&lt;%=@submission['Id']%&gt;</parameter>
+        </parameters><messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents><task type="Complete" label="" value="">utilities_echo_v1_11</task></dependents>
+        </task>
+          
+            <task name="Request Completed" id="utilities_echo_v1_11" definition_id="utilities_echo_v1" x="935" y="594">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>false</deferrable>
+          <visible>true</visible>
+          <parameters>
+            <parameter id="input" label="Input" required="true" tooltip="" menu=""/>
+        </parameters><messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents/>
+        </task>
+          </request>
+    </taskTree>
+</tree>

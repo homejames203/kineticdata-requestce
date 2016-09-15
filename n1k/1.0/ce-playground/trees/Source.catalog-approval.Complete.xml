@@ -1,0 +1,43 @@
+<tree schema_version="1.0">
+    <sourceName>CE Playground</sourceName>
+    <sourceGroup>catalog > approval</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree schema_version="1.0" version="" builder_version="">
+        <name>Complete</name>
+        <author/>
+        <notes/>
+        <lastID>1</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters/>
+                <messages/>
+                <dependents><task type="Complete" label="" value="">utilities_create_trigger_v1_1</task></dependents>
+            </task>
+        
+            <task name="utilities_create_trigger_v1_1" id="utilities_create_trigger_v1_1" definition_id="utilities_create_trigger_v1" x="309" y="189">
+          <version>1</version>
+          <configured>true</configured>
+          <defers>false</defers>
+          <deferrable>false</deferrable>
+          <visible>false</visible>
+          <parameters>
+            <parameter id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+            <parameter id="deferral_token" label="Deferral Token" required="true" tooltip="" menu="">&lt;%= @values['Deferral Token']%&gt;</parameter>
+            <parameter id="deferred_variables" label="Deferred Results" required="false" tooltip="" menu=""/>
+            <parameter id="message" label="Message" required="false" tooltip="" menu=""/>
+        </parameters><messages>
+            <message type="Create"/>
+            <message type="Update"/>
+            <message type="Complete"/>
+          </messages>
+          <dependents/>
+        </task>
+          </request>
+    </taskTree>
+</tree>
