@@ -2,6 +2,14 @@ module Kinetic
   module TaskApiV2
     class SDK
 
+      # get the database configuration
+      def retrieve_db
+        puts "Retrieving database configuration"
+        response = get("/config/db", {}, header_basic_auth)
+        response.body
+      end
+
+
       # Update the database configuration
       # This assumes the database has already been created on the dbms
       def update_db
@@ -13,7 +21,7 @@ module Kinetic
           "hibernate.dialect" => "com.kineticdata.task.adapters.dbms.KineticPostgreSQLDialect"
         }
         puts "Updating the database properties"
-        response = put("/config/db", body, default_headers)
+        put("/config/db", body, default_headers)
       end
 
 
@@ -25,7 +33,7 @@ module Kinetic
           "Trigger Query" => @custom['engine']['trigger']
         }
         puts "Updating the engine properties"
-        response = put("/config/engine", body, default_headers)
+        put("/config/engine", body, default_headers)
 
         # start the task engine?
         if @custom['engine']['delay'].to_i > 0
@@ -45,7 +53,7 @@ module Kinetic
         body["Log Size (MB)"] = @custom['source']['log_size'] unless @custom['source']['log_size'].nil?
 
         puts "Updating the web server properties"
-        response = put("/config/server", body, default_headers)
+        put("/config/server", body, default_headers)
 
         # reset the configuration user
         @config_user = {

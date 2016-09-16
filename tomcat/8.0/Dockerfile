@@ -124,20 +124,20 @@ RUN set -e \
 #-------------------------------------------------------------------------------
 # configure the listener with compression and charset
 RUN mv conf/server.xml conf/server.xml.bak
-ADD server.xml conf/server.xml
+COPY server.xml conf/server.xml
 # configure a user that has access to the manager and host-manager apps
 RUN mv conf/tomcat-users.xml conf/tomcat-users.xml.bak
-ADD tomcat-users.xml conf/tomcat-users.xml
+COPY tomcat-users.xml conf/tomcat-users.xml
 # add error pages
 RUN mv conf/web.xml conf/web.xml.bak
-ADD web.xml conf/web.xml
+COPY web.xml conf/web.xml
 # configure environment settings
-ADD setenv.sh bin/setenv.sh
+COPY setenv.sh bin/setenv.sh
 RUN chmod +x bin/setenv.sh
 
 # Web Applications
 RUN rm -rf webapps/ROOT/*; rm -rf webapps/docs; rm -rf webapps/examples
-ADD ROOT.war webapps/ROOT/ROOT.war
+COPY ROOT.war webapps/ROOT/ROOT.war
 WORKDIR $CATALINA_HOME/webapps/ROOT
 RUN unzip ROOT.war && rm ROOT.war
 WORKDIR $CATALINA_HOME

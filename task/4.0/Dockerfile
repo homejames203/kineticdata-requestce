@@ -36,9 +36,10 @@ ADD ${CONSUMER_URL} kinetic_request_ce_consumer.rb
 # JRUBY
 #-------------
 ARG JRUBY_VER=1.7.26
+ARG JRUBY_URL=https://s3.amazonaws.com/jruby.org/downloads/$JRUBY_VER/jruby-bin-$JRUBY_VER.tar.gz
 ENV JRUBY_HOME /usr/local/jruby-$JRUBY_VER
 WORKDIR /usr/local
-ADD https://s3.amazonaws.com/jruby.org/downloads/$JRUBY_VER/jruby-bin-$JRUBY_VER.tar.gz .
+ADD ${JRUBY_URL} .
 RUN tar -xzvf jruby-bin-$JRUBY_VER.tar.gz && rm jruby-bin-$JRUBY_VER.tar.gz
 ENV PATH $JRUBY_HOME/bin:$PATH
 RUN gem install colorize rest-client:1.8.0

@@ -1,3 +1,5 @@
+require 'base64'
+
 module Kinetic
   module TaskApiV2
     class SDK
