@@ -15,7 +15,7 @@ module Kinetic
       def update_db
         body = {
           "hibernate.connection.driver_class" => "org.postgresql.Driver",
-          "hibernate.connection.url" => "jdbc:postgresql://#{@custom['db']['server']['host']}:#{@custom['db']['server']['port']}/#{@custom['source']['slug']}",
+          "hibernate.connection.url" => "jdbc:postgresql://#{@custom['db']['server']['host']}:#{@custom['db']['server']['port']}/#{@custom['db']['name']}",
           "hibernate.connection.username" => @custom['db']['user']['username'],
           "hibernate.connection.password" => @custom['db']['user']['password'],
           "hibernate.dialect" => "com.kineticdata.task.adapters.dbms.KineticPostgreSQLDialect"
@@ -46,8 +46,8 @@ module Kinetic
       # Update the web server and default configuration user settings
       def update_properties
         body = {
-          "Configurator Password" => @custom['config_user']['username'],
-          "Configurator Username" => @custom['config_user']['password']
+          "Configurator Username" => @custom['config_user']['username'],
+          "Configurator Password" => @custom['config_user']['password']
         }
         body["Log Level"] = @custom['source']['log_level'] unless @custom['source']['log_level'].nil?
         body["Log Size (MB)"] = @custom['source']['log_size'] unless @custom['source']['log_size'].nil?

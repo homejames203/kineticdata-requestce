@@ -1,4 +1,0 @@
-server: "http://localhost:8080/kinetic-task"
-config_user:
-  username: "admin"
-  password: "admin"

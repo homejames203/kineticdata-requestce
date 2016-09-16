@@ -21,17 +21,12 @@
 # determine this file's current directory
 pwd = File.dirname(File.expand_path(__FILE__))
 
-# require yaml to load the configuration properties
-require 'yaml'
 # require the task sdk
 require "#{pwd}/task-sdk/sdk.rb"
 
 # Log file to send +puts+ statements to
 @@logfile = "#{pwd}/#{Time.now.strftime('%Y%m%dT%H%M%S%L')}.log"
 
-
-# Load Settings
-@defaults = YAML.load(File.read(pwd+"/settings.yaml"))
 
 # temporary env file for testing, will not be present on docker host
 env_file = pwd + "/env.list"
@@ -46,12 +41,16 @@ if File.exists? env_file
     end
   end
 end
+
+
+# Set the custom properties that were set in the environment
 @custom = {
   "config_user" => {
     "username" => ENV["config_user.username"],
     "password" => ENV["config_user.password"]
   },
   "db" => {
+    "name" => ENV["db.name"],
     "server" => {
       "host" => ENV["db.server.host"],
       "port" => ENV["db.server.port"]
@@ -75,6 +74,16 @@ end
     }
   }
 }
+
+# Load Settings
+@defaults = {
+  "server" => ENV["task.url"],
+  "config_user" => {
+    "username": "admin",
+    "password": "admin"
+  }
+}
+
 
 # Use the Task SDK
 sdk = Kinetic::TaskApiV2::SDK.new(@defaults, @custom)
@@ -117,23 +126,24 @@ sdk.create_source(
   })
 
 # create policy rules
-sdk.create_policy_rule(
-  {
-    "name" => "Test",
-    "type" => "API Access",
-    "rule" => "true",
-    "message" => "You should have access."
-  })
+# sdk.create_policy_rule(
+#   {
+#     "name" => "Test",
+#     "type" => "API Access",
+#     "rule" => "true",
+#     "message" => "You should have access."
+#   })
+#
 
 # create categories
-sdk.create_category("Jack")
+# sdk.create_category("Jack")
 
 # create users
-sdk.create_user(
-  { "loginId" => "foo",
-    "password" => "bar",
-    "email" => "foo@bar.com"
-  })
+# sdk.create_user(
+#   { "loginId" => "foo",
+#     "password" => "bar",
+#     "email" => "foo@bar.com"
+#   })
 
 # create groups
 sdk.create_group("Test Group")
@@ -141,19 +151,31 @@ sdk.create_group("Test Group")
 # import handlers
 Dir[File.dirname(File.expand_path(__FILE__))+"/handlers/*"].each do |handler|
   handler_file = File.new(handler, 'rb')
-  sdk.import_handler(handler_file)
 
-  # update each handler - need API to get list of info values?
-  body = {
-    "properties" => {
-      "api_server" => @custom['source']['server'],
-      "api_username" => @custom['source']['user']['username'],
-      "api_password" => @custom['source']['user']['password'],
-      "space_slug" => @custom['source']['slug']
-    },
-    "categories" => []
-  }
-  sdk.update_handler(File.basename(handler_file, ".zip"), body)
+  # try up to 3 times in case of time-outs
+  tries = 3
+  response = nil
+  while tries > 0 do
+    response = sdk.import_handler(handler_file)
+    break if !response.nil? && response.code == 200
+    tries -= 1
+    sleep 2
+  end
+
+  # if import was successful, set the handler properties
+  if tries > 0
+    # update each handler - need API to get list of info values?
+    body = {
+      "properties" => {
+        "api_server" => @custom['source']['server'],
+        "api_username" => @custom['source']['user']['username'],
+        "api_password" => @custom['source']['user']['password'],
+        "space_slug" => @custom['source']['slug']
+      },
+      "categories" => []
+    }
+    sdk.update_handler(File.basename(handler_file, ".zip"), body)
+  end
 end
 
 # import trees
@@ -165,6 +187,7 @@ Dir[File.dirname(File.expand_path(__FILE__))+"/trees/*"].each do |tree|
     )
   # save the file
   File.write(tree, content)
+  # import the file
   sdk.import_tree(File.new(tree, 'rb'))
 end
 

@@ -39,6 +39,7 @@ module Kinetic
       #     "password" => "changed"
       #   },
       #   "db" => {
+      #     "name" => "n1k-space_slug",
       #     "server" => {
       #       "host" => "localhost",
       #       "port" => "5432"

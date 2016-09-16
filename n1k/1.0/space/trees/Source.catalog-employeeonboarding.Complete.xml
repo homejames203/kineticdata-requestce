@@ -1,5 +1,5 @@
 <tree schema_version="1.0">
-    <sourceName>task_n1k-10</sourceName>
+    <sourceName>kinetic-ce</sourceName>
     <sourceGroup>catalog > employee-onboarding</sourceGroup>
     <type>Tree</type>
     <status>Active</status>

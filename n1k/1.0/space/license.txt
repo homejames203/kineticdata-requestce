@@ -1,0 +1,10 @@
+--- MCwCFEsgoL1NFzBFniFpmQv79XOM0XCXAhRu+O+/je0xyyiuhhY6UPazNSAOEA== ---
+Application: Kinetic Task
+Company: Kinetic Data Hackathon
+Expiration: 2016-09-30T00:00:00.000Z
+License Type: Standard
+Intended Use: Hackathon
+
+This standard Kinetic Task application license authorizes participants of the Ki
+netic Data Hackathon to use Kinetic Task within environments under their organiz
+ational control. This license expires on September 30, 2016.
