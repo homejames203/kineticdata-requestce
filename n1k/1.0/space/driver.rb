@@ -117,18 +117,7 @@ puts "Preparing to seed the Kinetic Task database"
 
 
 # Import the license if there is one
-puts "Checking if there is a license"
-license_filename = pwd+"/license.txt"
-if File.exists? license_filename
-  license_content = File.read(license_filename)
-  if license_content.size == 0
-    puts "  * License is empty, skip importing license".yellow
-  else
-    sdk.update_license(license_content)
-  end
-else
-  puts "  * No license file found, skip importing license".yellow
-end
+sdk.import_license(pwd+"/license.txt")
 
 
 # Create the source

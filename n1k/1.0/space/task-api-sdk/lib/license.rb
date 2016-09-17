@@ -26,6 +26,24 @@ module Kinetic
         post("/config/license", body, headers)
       end
 
+      # Imports the license file
+      #
+      # Attributes
+      #
+      # +license+ - either the license file path (String), or the license file (File)
+      #
+      def import_license(license, headers=default_headers)
+        if license.is_a? File
+          update_license(license.read, headers)
+        else
+          if File.exists? license
+            update_license(File.read(license), headers)
+          else
+            puts "  * License file \"#{license}\" does not exist.".yellow
+          end
+        end
+      end
+      
     end
   end
 end
