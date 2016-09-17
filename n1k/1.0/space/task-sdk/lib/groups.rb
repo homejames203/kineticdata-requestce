@@ -8,6 +8,36 @@ module Kinetic
         post("/groups", { "name" => name }, headers)
       end
 
+      # Delete a Group
+      #
+      # Attributes
+      #
+      # +name+ - name of the group
+      # +headers+ - hash of headers to send, default is basic authentication
+      def delete_group(name, headers=header_basic_auth)
+        puts "Deleting Group \"#{name}\""
+        delete("/groups/#{url_encode(name)}", headers)
+      end
+
+      # Delete all Groups
+      #
+      # Attributes
+      #
+      # +headers+ - hash of headers to send, default is basic authentication
+      def delete_groups(headers=header_basic_auth)
+        puts "Deleting all groups"
+        find_groups(headers).each do |group_json|
+          group = JSON.parse(group_json)
+          delete("/groups/#{url_encode(group['name')}", headers)
+        end
+      end
+
+      # Retrieve all groups
+      def find_groups(headers=header_basic_auth)
+        puts "Retrieving all groups"
+        get("/groups", headers)
+      end
+
       # Add user to group
       def add_user_to_group(login_id, group_name, headers=default_headers)
         body = { "loginId" => login_id }

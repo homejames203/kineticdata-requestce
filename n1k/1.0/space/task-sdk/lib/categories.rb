@@ -8,6 +8,43 @@ module Kinetic
         post("/categories", body, headers)
       end
 
+      # Delete a Category
+      #
+      # Attributes
+      #
+      # +name+ - name of the category
+      # +headers+ - hash of headers to send, default is basic authentication
+      def delete_category(name, headers=header_basic_auth)
+        puts "Deleting Category \"#{name}\""
+        delete("/categories/#{url_encode(name)}", headers)
+      end
+
+      # Delete all Categories
+      #
+      # Attributes
+      #
+      # +headers+ - hash of headers to send, default is basic authentication
+      def delete_categories(headers=header_basic_auth)
+        puts "Deleting all categories"
+        find_categories(headers).each do |category_json|
+          category = JSON.parse(category_json)
+          delete("/categories/#{url_encode(category['name')}", headers)
+        end
+      end
+
+      # Retrieve all categories
+      def find_categories(headers=header_basic_auth)
+        puts "Retrieving all categories"
+        get("/categories", headers)
+      end
+
+      # Retrieve a category
+      def retrieve_category(category_name, headers=header_basic_auth)
+        puts "Retrieving Category \"#{category_name}\""
+        get("/categories/#{url_encode(category_name)}", headers)
+      end
+
+
       def add_handler_to_category(handler_id, category_name, headers=default_headers)
         body = { "definitionId" => handler_id }
         puts "Adding handler \"#{handler_id}\" to category \"#{category_name}\""

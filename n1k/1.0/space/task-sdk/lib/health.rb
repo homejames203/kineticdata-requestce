@@ -2,11 +2,16 @@ module Kinetic
   module TaskApiV2
     class SDK
 
-      # checks if the web application is alive
-      def is_alive?(headers=header_basic_auth)
+      # Checks if the web application is alive
+      #
+      # Attributes
+      #
+      # +api_resource+ - the API resource route to get
+      #
+      def is_alive?(api_resource, headers=header_basic_auth)
         alive = false
         begin
-          response = get("/environment", {}, headers)
+          response = get(api_resource, {}, headers)
           alive = !response.nil? && response.code == 200
         rescue Errno::ECONNREFUSED
           puts "#{$!.inspect}".red
@@ -14,9 +19,14 @@ module Kinetic
         alive
       end
 
-      # waits until the web server is alive
-      def wait_until_alive(headers=header_basic_auth)
-        while !is_alive?(headers) do
+      # Waits until the web server is alive
+      #
+      # Attributes
+      #
+      # +api_resource+ - the API resource route to get
+      #
+      def wait_until_alive(api_resource, headers=header_basic_auth)
+        while !is_alive?(api_resource, headers) do
           puts "Web server is not ready, waiting..."
           sleep 3
         end

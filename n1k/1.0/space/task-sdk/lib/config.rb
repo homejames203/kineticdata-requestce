@@ -11,29 +11,28 @@ module Kinetic
 
 
       # Update the database configuration
+      #
       # This assumes the database has already been created on the dbms
-      def update_db
-        body = {
-          "hibernate.connection.driver_class" => "org.postgresql.Driver",
-          "hibernate.connection.url" => "jdbc:postgresql://#{@custom['db']['server']['host']}:#{@custom['db']['server']['port']}/#{@custom['db']['name']}",
-          "hibernate.connection.username" => @custom['db']['user']['username'],
-          "hibernate.connection.password" => @custom['db']['user']['password'],
-          "hibernate.dialect" => "com.kineticdata.task.adapters.dbms.KineticPostgreSQLDialect"
-        }
+      #
+      # Attributes
+      #
+      # +settings+ - the hash of settings for the selected type of dbms
+      #
+      def update_db(settings)
         puts "Updating the database properties"
-        put("/config/db", body, default_headers)
+        put("/config/db", settings, default_headers)
       end
 
 
       # Update the engine settings
-      def update_engine
-        body = {
-          "Max Threads" => @custom['engine']['threads'],
-          "Sleep Delay" => @custom['engine']['delay'],
-          "Trigger Query" => @custom['engine']['trigger']
-        }
+      #
+      # Attributes
+      #
+      # +settings+ - the hash of engine settings
+      #
+      def update_engine(settings)
         puts "Updating the engine properties"
-        put("/config/engine", body, default_headers)
+        put("/config/engine", settings, default_headers)
 
         # start the task engine?
         if @custom['engine']['delay'].to_i > 0
@@ -44,14 +43,12 @@ module Kinetic
 
 
       # Update the web server and default configuration user settings
-      def update_properties
-        body = {
-          "Configurator Username" => @custom['config_user']['username'],
-          "Configurator Password" => @custom['config_user']['password']
-        }
-        body["Log Level"] = @custom['source']['log_level'] unless @custom['source']['log_level'].nil?
-        body["Log Size (MB)"] = @custom['source']['log_size'] unless @custom['source']['log_size'].nil?
-
+      #
+      # Attributes
+      #
+      # +settings+ - the hash of settings for the web server and configuration user
+      #
+      def update_properties(settings)
         puts "Updating the web server properties"
         put("/config/server", body, default_headers)
 

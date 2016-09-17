@@ -79,8 +79,8 @@ end
 @defaults = {
   "server" => ENV["task.url"],
   "config_user" => {
-    "username": "admin",
-    "password": "admin"
+    "username" => "admin",
+    "password" => "admin"
   }
 }
 
@@ -89,23 +89,31 @@ end
 sdk = Kinetic::TaskApiV2::SDK.new(@defaults, @custom)
 
 # wait until the web application is alive
-sdk.wait_until_alive
+sdk.wait_until_alive("/environment")
 
 # Check if the web server is already configured
 if JSON.parse(sdk.retrieve_db)['JDBC Driver'] == "org.postgresql.Driver"
-  puts "Web server is already configured"
+  puts "Kinetic Task web server is already configured"
   return
 end
+puts "Preparing Kinetic Task web server"
 
 # update the database properties
-sdk.update_db
+sdk.update_db(
+  {
+    "hibernate.connection.driver_class" => "org.postgresql.Driver",
+    "hibernate.connection.url" => "jdbc:postgresql://#{@custom['db']['server']['host']}:#{@custom['db']['server']['port']}/#{@custom['db']['name']}",
+    "hibernate.connection.username" => @custom['db']['user']['username'],
+    "hibernate.connection.password" => @custom['db']['user']['password'],
+    "hibernate.dialect" => "com.kineticdata.task.adapters.dbms.KineticPostgreSQLDialect"
+  })
 
 # Check if the database is already seeded
 unless sdk.retrieve_source(@custom['source']['slug']).nil?
-  puts "Database is already seeded"
+  puts "Kinetic Task database is already seeded"
   return
 end
-puts "Preparing to seed database"
+puts "Preparing to seed the Kinetic Task database"
 
 # import the license if there is one
 sdk.update_license(pwd+"/license.txt")
@@ -146,7 +154,7 @@ sdk.create_source(
 #   })
 
 # create groups
-sdk.create_group("Test Group")
+#sdk.create_group("Test Group")
 
 # import handlers
 Dir[File.dirname(File.expand_path(__FILE__))+"/handlers/*"].each do |handler|
@@ -197,7 +205,18 @@ Dir[File.dirname(File.expand_path(__FILE__))+"/routines/*"].each do |routine|
 end
 
 # update engine properties
-sdk.update_engine
+sdk.update_engine(
+  {
+    "Max Threads" => @custom['engine']['threads'],
+    "Sleep Delay" => @custom['engine']['delay'],
+    "Trigger Query" => @custom['engine']['trigger']
+  })
 
 # update web server and configuration user properties
-sdk.update_properties
+server_properties = {
+  "Configurator Username" => @custom['config_user']['username'],
+  "Configurator Password" => @custom['config_user']['password']
+}
+server_properties["Log Level"] = @custom['source']['log_level'] unless @custom['source']['log_level'].nil?
+server_properties["Log Size (MB)"] = @custom['source']['log_size'] unless @custom['source']['log_size'].nil?
+sdk.update_properties(server_properties)

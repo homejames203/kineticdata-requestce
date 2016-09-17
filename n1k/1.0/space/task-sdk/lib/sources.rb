@@ -22,6 +22,36 @@ module Kinetic
         post("/sources", source, headers)
       end
 
+      # Delete a Source
+      #
+      # Attributes
+      #
+      # +name+ - name of the source
+      # +headers+ - hash of headers to send, default is basic authentication
+      def delete_source(name, headers=header_basic_auth)
+        puts "Deleting Source \"#{name}\""
+        delete("/sources/#{url_encode(name)}", headers)
+      end
+
+      # Delete all Sources
+      #
+      # Attributes
+      #
+      # +headers+ - hash of headers to send, default is basic authentication
+      def delete_sources(headers=header_basic_auth)
+        puts "Deleting all sources"
+        find_sources(headers).each do |source_json|
+          source = JSON.parse(source_json)
+          delete("/sources/#{url_encode(source['name')}", headers)
+        end
+      end
+
+      # Retrieve all sources
+      def find_sources(headers=header_basic_auth)
+        puts "Retrieving all sources"
+        get("/sources", headers)
+      end
+
       def retrieve_source(name, parameters={}, headers=default_headers)
         puts "Retrieving source named \"#{name}\""
         get("/sources/#{url_encode(name)}", parameters, headers)
