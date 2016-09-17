@@ -88,7 +88,7 @@ end
 # Use the Task SDK
 sdk = Kinetic::TaskApiV2::SDK.new(@defaults, @custom)
 
-# wait until the web application is alive
+# Wait until the web application is alive
 sdk.wait_until_alive("/environment")
 
 # Check if the web server is already configured
@@ -98,7 +98,7 @@ if JSON.parse(sdk.retrieve_db)['JDBC Driver'] == "org.postgresql.Driver"
 end
 puts "Preparing Kinetic Task web server"
 
-# update the database properties
+# Update the database properties
 sdk.update_db(
   {
     "hibernate.connection.driver_class" => "org.postgresql.Driver",
@@ -115,10 +115,23 @@ unless sdk.retrieve_source(@custom['source']['slug']).nil?
 end
 puts "Preparing to seed the Kinetic Task database"
 
-# import the license if there is one
-sdk.update_license(pwd+"/license.txt")
 
-# create the source
+# Import the license if there is one
+puts "Checking if there is a license"
+license_filename = pwd+"/license.txt"
+if File.exists? license_filename
+  license_content = File.read(license_filename)
+  if license_content.size == 0
+    puts "  * License is empty, skip importing license".yellow
+  else
+    sdk.update_license(license_content)
+  end
+else
+  puts "  * No license file found, skip importing license".yellow
+end
+
+
+# Create the source
 sdk.create_source(
   {
     "name" => @custom['source']['slug'],
@@ -133,7 +146,7 @@ sdk.create_source(
     "policyRules" => []
   })
 
-# create policy rules
+# Create policy rules
 # sdk.create_policy_rule(
 #   {
 #     "name" => "Test",
@@ -143,20 +156,20 @@ sdk.create_source(
 #   })
 #
 
-# create categories
+# Create categories
 # sdk.create_category("Jack")
 
-# create users
+# Create users
 # sdk.create_user(
 #   { "loginId" => "foo",
 #     "password" => "bar",
 #     "email" => "foo@bar.com"
 #   })
 
-# create groups
-#sdk.create_group("Test Group")
+# Create groups
+# sdk.create_group("Test Group")
 
-# import handlers
+# Import handlers
 Dir[File.dirname(File.expand_path(__FILE__))+"/handlers/*"].each do |handler|
   handler_file = File.new(handler, 'rb')
 
@@ -186,7 +199,7 @@ Dir[File.dirname(File.expand_path(__FILE__))+"/handlers/*"].each do |handler|
   end
 end
 
-# import trees
+# Import trees
 Dir[File.dirname(File.expand_path(__FILE__))+"/trees/*"].each do |tree|
   # fix up the source name in the tree, otherwise the import will fail
   content = File.read(tree).sub(
@@ -199,12 +212,12 @@ Dir[File.dirname(File.expand_path(__FILE__))+"/trees/*"].each do |tree|
   sdk.import_tree(File.new(tree, 'rb'))
 end
 
-# import routines
+# Import routines
 Dir[File.dirname(File.expand_path(__FILE__))+"/routines/*"].each do |routine|
   sdk.import_routine(File.new(routine, 'rb'))
 end
 
-# update engine properties
+# Update engine properties
 sdk.update_engine(
   {
     "Max Threads" => @custom['engine']['threads'],
@@ -212,7 +225,7 @@ sdk.update_engine(
     "Trigger Query" => @custom['engine']['trigger']
   })
 
-# update web server and configuration user properties
+# Update web server and configuration user properties
 server_properties = {
   "Configurator Username" => @custom['config_user']['username'],
   "Configurator Password" => @custom['config_user']['password']
