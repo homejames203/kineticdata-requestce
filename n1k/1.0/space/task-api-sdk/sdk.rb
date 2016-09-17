@@ -1,5 +1,6 @@
 # require colorize to highlight errors or warnings
 require 'colorize'
+
 # require all files in the lib directory
 Dir[File.dirname(File.expand_path(__FILE__))+"/lib/**/*.rb"].each {|file| require file }
 

@@ -28,7 +28,7 @@ module Kinetic
         puts "Deleting all groups"
         find_groups(headers).each do |group_json|
           group = JSON.parse(group_json)
-          delete("/groups/#{url_encode(group['name')}", headers)
+          delete("/groups/#{url_encode(group['name'])}", headers)
         end
       end
 

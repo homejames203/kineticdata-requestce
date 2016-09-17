@@ -21,8 +21,8 @@
 # determine this file's current directory
 pwd = File.dirname(File.expand_path(__FILE__))
 
-# require the task sdk
-require "#{pwd}/task-sdk/sdk.rb"
+# require the task api sdk
+require "#{pwd}/task-api-sdk/sdk.rb"
 
 # Log file to send +puts+ statements to
 @@logfile = "#{pwd}/#{Time.now.strftime('%Y%m%dT%H%M%S%L')}.log"

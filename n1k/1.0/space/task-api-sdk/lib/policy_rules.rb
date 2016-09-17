@@ -33,7 +33,7 @@ module Kinetic
       #
       def delete_policy_rule(policy, headers=header_basic_auth)
         puts "Deleting policy rule \"#{policy['type']} - #{policy['name']}\""
-        delete("/policyRules/#{url_encode(policy['type'])}/#{url_encode(policy['name']}", headers)
+        delete("/policyRules/#{url_encode(policy['type'])}/#{url_encode(policy['name'])}", headers)
       end
 
       def delete_policy_rules(headers=header_basic_auth)

@@ -30,9 +30,9 @@ module Kinetic
       #
       # +settings+ - the hash of engine settings
       #
-      def update_engine(settings)
+      def update_engine(settings, headers=default_headers)
         puts "Updating the engine properties"
-        put("/config/engine", settings, default_headers)
+        put("/config/engine", settings, headers)
 
         # start the task engine?
         if @custom['engine']['delay'].to_i > 0
@@ -48,9 +48,9 @@ module Kinetic
       #
       # +settings+ - the hash of settings for the web server and configuration user
       #
-      def update_properties(settings)
+      def update_properties(settings, headers=default_headers)
         puts "Updating the web server properties"
-        put("/config/server", body, default_headers)
+        put("/config/server", settings, headers)
 
         # reset the configuration user
         @config_user = {

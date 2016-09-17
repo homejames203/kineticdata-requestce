@@ -34,7 +34,7 @@ module Kinetic
         puts "Deleting all users"
         find_users(headers).each do |user_json|
           user = JSON.parse(user_json)
-          delete("/users/#{url_encode(user['login_id')}", headers)
+          delete("/users/#{url_encode(user['login_id'])}", headers)
         end
       end
 

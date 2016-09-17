@@ -42,7 +42,7 @@ module Kinetic
         puts "Deleting all sources"
         find_sources(headers).each do |source_json|
           source = JSON.parse(source_json)
-          delete("/sources/#{url_encode(source['name')}", headers)
+          delete("/sources/#{url_encode(source['name'])}", headers)
         end
       end
 

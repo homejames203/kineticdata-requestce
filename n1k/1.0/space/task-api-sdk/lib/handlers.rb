@@ -22,7 +22,7 @@ module Kinetic
         puts "Deleting all handlers"
         find_handlers(headers).each do |handler_json|
           handler = JSON.parse(handler_json)
-          delete("/handlers/#{handler['definition_id')}", headers)
+          delete("/handlers/#{handler['definition_id']}", headers)
         end
       end
 
