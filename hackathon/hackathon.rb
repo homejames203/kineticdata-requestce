@@ -77,7 +77,6 @@ end
 
 # Load Settings
 @defaults = {
-  "server" => ENV["task.url"],
   "config_user" => {
     "username" => "admin",
     "password" => "admin"
@@ -86,7 +85,7 @@ end
 
 
 # Use the Task SDK
-sdk = Kinetic::TaskApi::SDK.new(@defaults, @custom)
+sdk = Kinetic::TaskApi::SDK.new(ENV["task.url"], @defaults, @custom)
 
 # Wait until the web application is alive
 sdk.wait_until_alive("/environment")
