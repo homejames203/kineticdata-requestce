@@ -5,13 +5,12 @@
 #
 # - Modify Database configuration
 # - Apply License
-# - Add Sources (Kinetic CE pointed back to the Space)
+# - Add Source
 # - Add Policy Rules
 # - Add Categories
 # - Add Users
 # - Add Groups
 # - Add Handlers and configure
-# - Modify the "Notify on Run Error" tree
 # - Add Routines and configure
 # - Add Trees
 # - Modify Engine settings
@@ -22,7 +21,7 @@
 pwd = File.dirname(File.expand_path(__FILE__))
 
 # require the task api sdk
-require "#{pwd}/task-api-sdk/sdk.rb"
+require "#{pwd}/../../task-sdk-rb/task-sdk"
 
 # Log file to send +puts+ statements to
 @@logfile = "#{pwd}/#{Time.now.strftime('%Y%m%dT%H%M%S%L')}.log"
@@ -74,6 +73,7 @@ end
     }
   }
 }
+@custom['log_level'] = ENV['log.level'].nil? ? "info" : ENV["log.level"]
 
 # Load Settings
 @defaults = {
@@ -86,7 +86,7 @@ end
 
 
 # Use the Task SDK
-sdk = Kinetic::TaskApiV2::SDK.new(@defaults, @custom)
+sdk = Kinetic::TaskApi::SDK.new(@defaults, @custom)
 
 # Wait until the web application is alive
 sdk.wait_until_alive("/environment")
