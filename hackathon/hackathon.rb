@@ -17,6 +17,8 @@
 # - Modify Web Server / Configurator User configuration
 #-------------------------------------------------------------------------------
 
+require 'yaml'
+
 # determine this file's current directory
 pwd = File.dirname(File.expand_path(__FILE__))
 
@@ -26,66 +28,13 @@ require "#{pwd}/../../task-sdk-rb/task-sdk"
 # Log file to send +puts+ statements to
 @@logfile = "#{pwd}/#{Time.now.strftime('%Y%m%dT%H%M%S%L')}.log"
 
-
-# temporary env file for testing, will not be present on docker host
-env_file = pwd + "/env.list"
-if File.exists? env_file
-  IO.readlines(env_file).each do |line|
-    if line.size > 0 && !line.strip.start_with?("#")
-      key_value = line.split("=", 2)
-      case key_value.size
-      when 2 then ENV[key_value[0]] = key_value[1].strip
-      when 1 then ENV[key_value[0]] = ""
-      end
-    end
-  end
-end
-
-
-# Set the custom properties that were set in the environment
-@custom = {
-  "config_user" => {
-    "username" => ENV["config_user.username"],
-    "password" => ENV["config_user.password"]
-  },
-  "db" => {
-    "name" => ENV["db.name"],
-    "server" => {
-      "host" => ENV["db.server.host"],
-      "port" => ENV["db.server.port"]
-    },
-    "user" => {
-      "username" => ENV["db.user.username"],
-      "password" => ENV["db.user.password"]
-    }
-  },
-  "engine" => {
-    "delay" => ENV["engine.delay"],
-    "threads" => ENV["engine.threads"],
-    "trigger" => ENV["engine.trigger"]
-  },
-  "source" => {
-    "slug" => ENV["source.slug"],
-    "server" => ENV["source.server"],
-    "user" => {
-      "username" => ENV["source.user.username"],
-      "password" => ENV["source.user.password"]
-    }
-  }
-}
-@custom['log_level'] = ENV['log.level'].nil? ? "info" : ENV["log.level"]
-
-# Load Settings
-@defaults = {
-  "config_user" => {
-    "username" => "admin",
-    "password" => "admin"
-  }
-}
-
+# Load the space specific options
+options = YAML.load_file("#{pwd}/env.yaml")
+sdk_options = { "log_level" => options.delete("log_level") }
 
 # Use the Task SDK
-sdk = Kinetic::TaskApi::SDK.new(ENV["task.url"], @defaults, @custom)
+sdk = Kinetic::TaskApi::SDK.new(options.delete("task_url"), "admin", "admin", sdk_options)
+
 
 # Wait until the web application is alive
 sdk.wait_until_alive("/environment")
@@ -101,14 +50,14 @@ puts "Preparing Kinetic Task web server"
 sdk.update_db(
   {
     "hibernate.connection.driver_class" => "org.postgresql.Driver",
-    "hibernate.connection.url" => "jdbc:postgresql://#{@custom['db']['server']['host']}:#{@custom['db']['server']['port']}/#{@custom['db']['name']}",
-    "hibernate.connection.username" => @custom['db']['user']['username'],
-    "hibernate.connection.password" => @custom['db']['user']['password'],
+    "hibernate.connection.url" => "jdbc:postgresql://#{options['db']['server']['host']}:#{options['db']['server']['port']}/#{options['db']['name']}",
+    "hibernate.connection.username" => options['db']['user']['username'],
+    "hibernate.connection.password" => options['db']['user']['password'],
     "hibernate.dialect" => "com.kineticdata.task.adapters.dbms.KineticPostgreSQLDialect"
   })
 
 # Check if the database is already seeded
-unless sdk.retrieve_source(@custom['source']['slug']).nil?
+unless sdk.retrieve_source(options['source']['slug']).nil?
   puts "Kinetic Task database is already seeded"
   return
 end
@@ -122,14 +71,14 @@ sdk.import_license(pwd+"/license.txt")
 # Create the source
 sdk.create_source(
   {
-    "name" => @custom['source']['slug'],
+    "name" => options['source']['slug'],
     "status" => "Active",
     "type" => "Kinetic Request CE",
     "properties" => {
-      "Space Slug" => @custom['source']['slug'],
-      "Web Server" => @custom['source']['server'],
-      "Proxy Username" => @custom['source']['user']['username'],
-      "Proxy Password" => @custom['source']['user']['password']
+      "Space Slug" => options['source']['slug'],
+      "Web Server" => options['source']['server'],
+      "Proxy Username" => options['source']['user']['username'],
+      "Proxy Password" => options['source']['user']['password']
     },
     "policyRules" => []
   })
@@ -176,10 +125,10 @@ Dir[File.dirname(File.expand_path(__FILE__))+"/handlers/*"].each do |handler|
     # update each handler - need API to get list of info values?
     body = {
       "properties" => {
-        "api_server" => @custom['source']['server'],
-        "api_username" => @custom['source']['user']['username'],
-        "api_password" => @custom['source']['user']['password'],
-        "space_slug" => @custom['source']['slug']
+        "api_server" => options['source']['server'],
+        "api_username" => options['source']['user']['username'],
+        "api_password" => options['source']['user']['password'],
+        "space_slug" => options['source']['slug']
       },
       "categories" => []
     }
@@ -192,7 +141,7 @@ Dir[File.dirname(File.expand_path(__FILE__))+"/trees/*"].each do |tree|
   # fix up the source name in the tree, otherwise the import will fail
   content = File.read(tree).sub(
     /<sourceName>(.*)<\/sourceName>/,
-    "<sourceName>#{@custom['source']['slug']}</sourceName>"
+    "<sourceName>#{options['source']['slug']}</sourceName>"
     )
   # save the file
   File.write(tree, content)
@@ -208,16 +157,16 @@ end
 # Update engine properties
 sdk.update_engine(
   {
-    "Max Threads" => @custom['engine']['threads'],
-    "Sleep Delay" => @custom['engine']['delay'],
-    "Trigger Query" => @custom['engine']['trigger']
+    "Max Threads" => options['engine']['threads'],
+    "Sleep Delay" => options['engine']['delay'],
+    "Trigger Query" => options['engine']['trigger']
   })
 
 # Update web server and configuration user properties
 server_properties = {
-  "Configurator Username" => @custom['config_user']['username'],
-  "Configurator Password" => @custom['config_user']['password']
+  "Configurator Username" => options['config_user']['username'],
+  "Configurator Password" => options['config_user']['password']
 }
-server_properties["Log Level"] = @custom['source']['log_level'] unless @custom['source']['log_level'].nil?
-server_properties["Log Size (MB)"] = @custom['source']['log_size'] unless @custom['source']['log_size'].nil?
+server_properties["Log Level"] = options['source']['log_level'] unless options['source']['log_level'].nil?
+server_properties["Log Size (MB)"] = options['source']['log_size'] unless options['source']['log_size'].nil?
 sdk.update_properties(server_properties)
