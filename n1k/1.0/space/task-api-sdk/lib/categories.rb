@@ -34,7 +34,7 @@ module Kinetic
         puts "Deleting all categories"
         find_categories(headers).each do |category_json|
           category = JSON.parse(category_json)
-          delete_category(category['name']), headers)
+          delete_category(category['name'], headers)
         end
       end
 
