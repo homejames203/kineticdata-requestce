@@ -3,6 +3,11 @@ module Kinetic
     class SDK
 
       # Create a group
+      #
+      # Attributes
+      #
+      # +name+ - name of the group
+      # +headers+ - hash of headers to send, default is basic authentication and JSON content type
       def create_group(name, headers=default_headers)
         puts "Creating group \"#{name}\""
         post("/groups", { "name" => name }, headers)
@@ -33,12 +38,23 @@ module Kinetic
       end
 
       # Retrieve all groups
-      def find_groups(headers=header_basic_auth)
+      #
+      # Attributes
+      #
+      # +params+ - Query parameters to add to the URL, such as +include+
+      # +headers+ - hash of headers to send, default is basic authentication
+      def find_groups(params={}, headers=header_basic_auth)
         puts "Retrieving all groups"
-        get("/groups", headers)
+        get("/groups", params, headers)
       end
 
       # Add user to group
+      #
+      # Attributes
+      #
+      # +login_id+ - login_id of the user
+      # +group_name+ - name of the group to add the user to
+      # +headers+ - hash of headers to send, default is basic authentication and JSON content type
       def add_user_to_group(login_id, group_name, headers=default_headers)
         body = { "loginId" => login_id }
         puts "Adding user \"#{login_id}\" to group \"#{group_name}\""
@@ -46,6 +62,12 @@ module Kinetic
       end
 
       # Remove user from group
+      #
+      # Attributes
+      #
+      # +login_id+ - login_id of the user
+      # +group_name+ - name of the group to remove the user from
+      # +headers+ - hash of headers to send, default is basic authentication and JSON content type
       def remove_user_from_group(login_id, group_name, headers=default_headers)
         puts "Removing user \"#{login_id}\" from group \"#{group_name}\""
         post("/groups/#{url_encode(group_name)}/users/#{url_encode(login_id)}", headers)

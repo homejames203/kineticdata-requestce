@@ -6,8 +6,10 @@ module Kinetic
       #
       # Attributes
       #
-      def environment(headers=header_basic_auth)
-        get("/environment", {}, headers)
+      # +params+ - Query parameters to add to the URL, such as +include+
+      # +headers+ - hash of headers to send, default is basic authentication
+      def environment(params={}, headers=header_basic_auth)
+        get("/environment", params, headers)
       end
 
     end

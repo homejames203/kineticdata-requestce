@@ -7,7 +7,7 @@ module Kinetic
       # Attributes
       #
       # +api_resource+ - the API resource route to get
-      #
+      # +headers+ - hash of headers to send, default is basic authentication
       def is_alive?(api_resource, headers=header_basic_auth)
         alive = false
         begin
@@ -24,6 +24,7 @@ module Kinetic
       # Attributes
       #
       # +api_resource+ - the API resource route to get
+      # +headers+ - hash of headers to send, default is basic authentication
       #
       def wait_until_alive(api_resource, headers=header_basic_auth)
         while !is_alive?(api_resource, headers) do

@@ -2,6 +2,12 @@ module Kinetic
   module TaskApiV2
     class SDK
 
+      # Create a category
+      #
+      # Attributes
+      #
+      # +name+ - name of the category
+      # +headers+ - hash of headers to send, default is basic authentication and JSON content type
       def create_category(name, headers=default_headers)
         body = { "name" => name }
         puts "Creating category \"#{name}\""
@@ -28,20 +34,46 @@ module Kinetic
         puts "Deleting all categories"
         find_categories(headers).each do |category_json|
           category = JSON.parse(category_json)
-          delete("/categories/#{url_encode(category['name'])}", headers)
+          delete_category(category['name']), headers)
         end
       end
 
       # Retrieve all categories
-      def find_categories(headers=header_basic_auth)
+      #
+      # Attributes
+      #
+      # +params+ - Query parameters to add to the URL, such as +include+
+      # +headers+ - hash of headers to send, default is basic authentication
+      def find_categories(params={}, headers=header_basic_auth)
         puts "Retrieving all categories"
-        get("/categories", headers)
+        get("/categories", params, headers)
       end
 
       # Retrieve a category
-      def retrieve_category(category_name, headers=header_basic_auth)
-        puts "Retrieving Category \"#{category_name}\""
-        get("/categories/#{url_encode(category_name)}", headers)
+      #
+      # Attributes
+      #
+      # +name+ - name of the category
+      # +params+ - Query parameters to add to the URL, such as +include+
+      # +headers+ - hash of headers to send, default is basic authentication
+      def retrieve_category(name, params={}, headers=header_basic_auth)
+        puts "Retrieving Category \"#{name}\""
+        get("/categories/#{url_encode(name)}", params, headers)
+      end
+
+      # Update a category
+      #
+      # Attributes
+      # +body+ - hash of properties to update
+      # +headers+ - hash of headers to send, default is basic authentication
+      #
+      #  - Example
+      #
+      # update_category("Foo", { "name" => "Bar" })
+      #
+      def update_category(original_name, body={}, headers=header_basic_auth)
+        puts "Updating Category \"#{original_name}\""
+        put("/categories/#{url_encode(original_name)}", body, headers)
       end
 
 

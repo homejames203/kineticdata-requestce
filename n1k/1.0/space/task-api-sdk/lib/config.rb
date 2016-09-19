@@ -2,10 +2,15 @@ module Kinetic
   module TaskApiV2
     class SDK
 
-      # get the database configuration
-      def retrieve_db
+      # Retrieve the database configuration
+      #
+      # Attributes
+      #
+      # +params+ - Query parameters to add to the URL, such as +include+
+      # +headers+ - hash of headers to send, default is basic authentication
+      def retrieve_db(params={}, headers=header_basic_auth)
         puts "Retrieving database configuration"
-        response = get("/config/db", {}, header_basic_auth)
+        response = get("/config/db", params, headers)
         response.body
       end
 
@@ -17,10 +22,10 @@ module Kinetic
       # Attributes
       #
       # +settings+ - the hash of settings for the selected type of dbms
-      #
-      def update_db(settings)
+      # +headers+ - hash of headers to send, default is basic authentication and JSON content type
+      def update_db(settings, headers=default_headers)
         puts "Updating the database properties"
-        put("/config/db", settings, default_headers)
+        put("/config/db", settings, headers)
       end
 
 
@@ -29,7 +34,7 @@ module Kinetic
       # Attributes
       #
       # +settings+ - the hash of engine settings
-      #
+      # +headers+ - hash of headers to send, default is basic authentication and JSON content type
       def update_engine(settings, headers=default_headers)
         puts "Updating the engine properties"
         put("/config/engine", settings, headers)
@@ -47,7 +52,7 @@ module Kinetic
       # Attributes
       #
       # +settings+ - the hash of settings for the web server and configuration user
-      #
+      # +headers+ - hash of headers to send, default is basic authentication and JSON content type
       def update_properties(settings, headers=default_headers)
         puts "Updating the web server properties"
         put("/config/server", settings, headers)
